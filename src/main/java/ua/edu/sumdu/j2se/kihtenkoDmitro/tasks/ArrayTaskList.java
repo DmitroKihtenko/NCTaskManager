@@ -1,13 +1,15 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks;
 
-public class ArrayTaskList {
+public class ArrayTaskList extends AbstractTaskList {
     /**
      * Amount of added or deleted tasks after which the array memory is changed.
      */
     private final static int RESIZE_INTERVAL = 5;
-
-    private int taskAmount;
     private Task[] taskArr;
+
+    static {
+        type = ListTypes.types.ARRAY;
+    }
 
     public ArrayTaskList() {
         taskArr = new Task[RESIZE_INTERVAL];
@@ -71,10 +73,6 @@ public class ArrayTaskList {
         return true;
     }
 
-    public int size() {
-        return taskAmount;
-    }
-
     /**
      * After using remove task method indexes of specific objects can change.
      */
@@ -86,26 +84,5 @@ public class ArrayTaskList {
         }
 
         return taskArr[index];
-    }
-
-    public ArrayTaskList incoming(int from, int to) {
-        if(from > to) {
-            throw new IllegalArgumentException(
-                    "Invalid interval parameters!"
-            );
-        }
-
-        int nextTaskTime;
-        ArrayTaskList returnArr = new ArrayTaskList();
-
-        for(short index = 0; index < taskAmount; index++) {
-            nextTaskTime = taskArr[index].nextTimeAfter(from);
-
-            if(nextTaskTime != -1 && nextTaskTime < to) {
-                returnArr.add(taskArr[index]);
-            }
-        }
-
-        return returnArr;
     }
 }
