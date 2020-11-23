@@ -1,6 +1,6 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks;
 
-public class LinkedTaskList {
+public class LinkedTaskList extends AbstractTaskList {
     /**
      * Saving cell class for linked list node.
      */
@@ -9,8 +9,11 @@ public class LinkedTaskList {
         LinkedListPointer next;
     }
 
-    private int size;
     private LinkedListPointer first;
+
+    static {
+        type = ListTypes.types.LINKED;
+    }
 
     public LinkedTaskList() {
         first = new LinkedListPointer();
@@ -30,7 +33,7 @@ public class LinkedTaskList {
         first = new LinkedListPointer();
         first.next = tempPointer;
 
-        size++;
+        taskAmount++;
     }
 
     public boolean remove(Task task) {
@@ -42,7 +45,7 @@ public class LinkedTaskList {
 
         LinkedListPointer searchPointer = first;
 
-        if(size == 0) {
+        if(taskAmount == 0) {
             return false;
         }
 
@@ -50,7 +53,7 @@ public class LinkedTaskList {
             if(searchPointer.next.storedTask.equals(task)) {
                 searchPointer.next = searchPointer.next.next;
 
-                size--;
+                taskAmount--;
 
                 return true;
             }
@@ -61,15 +64,11 @@ public class LinkedTaskList {
         return false;
     }
 
-    public int size() {
-        return size;
-    }
-
     /**
      * Any task adds to begin of list so task indexes is reversed
      */
     public Task getTask(int index) {
-        if(index < 0 || index >= size) {
+        if(index < 0 || index >= taskAmount) {
             throw new IndexOutOfBoundsException(
                     "Invalid LinkedTaskList index parameter!"
             );
@@ -78,34 +77,10 @@ public class LinkedTaskList {
         index++;
         LinkedListPointer searchPointer = first;
 
-        for(int counter = size; counter > size - index; counter--) {
+        for(int counter = taskAmount; counter > taskAmount - index; counter--) {
             searchPointer = searchPointer.next;
         }
 
         return searchPointer.storedTask;
-    }
-
-    public LinkedTaskList incoming(int from, int to) {
-        if(from > to) {
-            throw new IllegalArgumentException(
-                    "Invalid interval parameters!"
-            );
-        }
-
-        int nextTaskTime;
-        LinkedListPointer searchPointer = new LinkedListPointer();
-        LinkedTaskList returnList = new LinkedTaskList();
-
-        while(searchPointer.next != null) {
-            searchPointer = searchPointer.next;
-
-            nextTaskTime = searchPointer.storedTask.nextTimeAfter(from);
-
-            if(nextTaskTime != -1 && nextTaskTime < to) {
-                returnList.add(searchPointer.storedTask);
-            }
-        }
-
-        return returnList;
     }
 }
