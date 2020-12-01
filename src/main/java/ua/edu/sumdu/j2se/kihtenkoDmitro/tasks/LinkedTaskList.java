@@ -1,5 +1,8 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 public class LinkedTaskList extends AbstractTaskList {
     /**
      * Saving cell class for linked list node.
@@ -82,5 +85,56 @@ public class LinkedTaskList extends AbstractTaskList {
         }
 
         return searchPointer.storedTask;
+    }
+
+    @Override
+    public Iterator<Task> iterator() {
+        return new Iterator<Task>() {
+            private LinkedListPointer node = first.next;
+            private LinkedListPointer deleteNode = first;
+
+            @Override
+            public boolean hasNext() {
+                return node != null;
+            }
+
+            @Override
+            public Task next() {
+                if(node == null) {
+                    throw new NoSuchElementException(
+                            "Iterator reached last position!"
+                    );
+                }
+                if(deleteNode.next.next == node) {
+                    deleteNode = deleteNode.next;
+                }
+                node = node.next;
+                return deleteNode.next.storedTask;
+            }
+
+            @Override
+            public void remove() {
+                if(node == first.next) {
+                    throw new IllegalStateException(
+                            "Needs calling of next() iterator method!"
+                    );
+                }
+                deleteNode.next = node;
+                taskAmount--;
+            }
+        };
+    }
+
+    @Override
+    public LinkedTaskList clone() {
+        LinkedTaskList returnObj = new LinkedTaskList();
+        LinkedListPointer addPtr = first.next;
+
+        while(addPtr != null) {
+            returnObj.add(addPtr.storedTask);
+
+            addPtr = addPtr.next;
+        }
+        return returnObj;
     }
 }

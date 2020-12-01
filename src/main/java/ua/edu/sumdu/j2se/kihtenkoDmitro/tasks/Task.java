@@ -5,17 +5,12 @@ package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks;
  * @author Kikhtenko Dmitro
  * @version 1.0
  */
-public class Task {
+public class Task implements Cloneable {
 
     /**
      * Stores a title of task.
      */
     private String title;
-
-    /**
-     * Stores a state of task activity.
-     */
-    private boolean isActive;
 
     /**
      * If task is repeated ({@link Task#isPeriodical}) stores a time of task start.
@@ -32,6 +27,11 @@ public class Task {
      * Stores an interval of task repeat.
      */
     private int interval;
+
+    /**
+     * Stores a state of task activity.
+     */
+    private boolean isActive;
 
     /**
      * Indicates whether the task is repeated.
@@ -221,5 +221,75 @@ public class Task {
                 return -1;
             }
         }
+    }
+
+    /**
+     * Equals method for Task class objects.
+     * @param otherObject task class object for comparison
+     * @return true if tasks have same field values, else return false
+     */
+    @Override
+    public boolean equals(Object otherObject) {
+        if(otherObject == null) {
+            return false;
+        }
+        if(this == otherObject) {
+            return true;
+        }
+        if(getClass() != otherObject.getClass()) {
+            return false;
+        }
+        return title.equals(((Task) otherObject).title) &&
+                start == ((Task) otherObject).start &&
+                end == ((Task) otherObject).end &&
+                interval == ((Task) otherObject).interval &&
+                isActive == ((Task) otherObject).isActive &&
+                isPeriodical == ((Task) otherObject).isPeriodical;
+    }
+
+    /**
+     * Hash code method for Task class objects.
+     * @return Unique hash code for Task class object (there may be collisions)
+     */
+    @Override
+    public int hashCode() {
+        int result = 0;
+
+        result ^= title.hashCode();
+        result ^= start;
+        result ^= end;
+        result += interval;
+        if(isActive) {
+            result >>= 3;
+        } else {
+            result >>= 5;
+        }
+        if(isPeriodical) {
+            result <<= 7;
+        } else {
+            result <<= 11;
+        }
+
+        return result;
+    }
+
+    /**
+     * To string method for Task class objects.
+     * @return string that consists of class name and all object fields through the symbol #
+     */
+    @Override
+    public String toString() {
+        return "Task.class#" + title + "#" + start + "#" + end
+                + "#" + interval + "#" + isActive + "#" + isPeriodical;
+    }
+
+    /**
+     * Clone method for the Task class objects.
+     * @return clone of the object (pointer on this object)
+     * @throws CloneNotSupportedException if class is not implements Cloneable() interface
+     */
+    @Override
+    public Task clone() throws CloneNotSupportedException {
+        return (Task)super.clone();
     }
 }
