@@ -1,7 +1,9 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.stream.Stream;
 
 public class LinkedTaskList extends AbstractTaskList {
     /**
@@ -136,5 +138,19 @@ public class LinkedTaskList extends AbstractTaskList {
             addPtr = addPtr.next;
         }
         return returnObj;
+    }
+
+    @Override
+    public Stream<Task> getStream() {
+        ArrayList<Task> streamArr = new ArrayList<>(taskAmount);
+        LinkedListPointer currentPtr = first.next;
+
+        while(currentPtr != null) {
+            streamArr.add(currentPtr.storedTask);
+
+            currentPtr = currentPtr.next;
+        }
+
+        return streamArr.stream();
     }
 }
