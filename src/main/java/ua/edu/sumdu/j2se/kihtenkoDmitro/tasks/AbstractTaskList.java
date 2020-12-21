@@ -1,5 +1,6 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks;
 
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
@@ -18,23 +19,6 @@ public abstract class AbstractTaskList implements Iterable<Task>, Cloneable {
 
     public int size() {
         return taskAmount;
-    }
-
-    final public AbstractTaskList incoming(final int from, final int to) {
-        if(from > to) {
-            throw new IllegalArgumentException(
-                    "Invalid interval parameters!"
-            );
-        }
-
-        AbstractTaskList returnArr = TaskListFactory.createTaskList(type);
-
-        getStream().filter((currentTask) -> {
-            int nextTime = currentTask.nextTimeAfter(from);
-            return nextTime != -1 && nextTime < to;}).
-                forEach(returnArr::add);
-
-        return returnArr;
     }
 
     @Override
