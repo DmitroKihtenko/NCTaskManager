@@ -1,13 +1,15 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks;
 
+import java.io.*;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 /**
  * Class Task for objects task.
  * @author Kikhtenko Dmitro
  * @version 1.0
  */
-public class Task implements Cloneable {
+public class Task implements Cloneable, Externalizable {
 
     /**
      * Stores a title of task.
@@ -39,6 +41,10 @@ public class Task implements Cloneable {
      * Indicates whether the task is repeated.
      */
     private boolean isPeriodical;
+
+    public Task() {
+        new Task("no info", LocalDateTime.now());
+    }
 
     /**
      * Constructor for non repeated tasks (task activity defaults as false).
@@ -291,5 +297,50 @@ public class Task implements Cloneable {
     @Override
     public Task clone() throws CloneNotSupportedException {
         return (Task)super.clone();
+    }
+
+    /**
+     * Overrode method for control Task objects serialization
+     * @param out stream where objects are being writing
+     * @exception IOException if something wrong with writing into stream
+     */
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeInt(title.length());
+        out.writeObject(title);
+        if(isActive) {
+            out.writeInt(1);
+        } else {
+            out.writeInt(0);
+        }
+        out.writeInt(getRepeatInterval());
+        out.writeLong(start.toEpochSecond(ZoneOffset.UTC));
+        if(isRepeated()) {
+            out.writeLong(end.toEpochSecond(ZoneOffset.UTC));
+        }
+    }
+
+    /**
+     * Overrode method for control Task objects deserialization
+     * @param in stream from which objects are being reading
+     * @exception IOException if something wrong with reading from stream
+     * @exception ClassNotFoundException if something wrong with deserialization String field title
+     */
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        in.readInt();
+        title = (String)in.readObject();
+        int activity = in.readInt();
+        isActive = activity == 1;
+        interval = in.readInt();
+        start = LocalDateTime.ofEpochSecond(in.readLong(),
+                0, ZoneOffset.UTC);
+        if(interval == 1) {
+            isPeriodical = true;
+            end = LocalDateTime.ofEpochSecond(in.readLong(),
+                    0, ZoneOffset.UTC);
+        } else {
+            isPeriodical = false;
+        }
     }
 }
