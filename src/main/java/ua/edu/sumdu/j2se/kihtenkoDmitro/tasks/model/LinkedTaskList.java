@@ -1,4 +1,6 @@
-package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks;
+package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model;
+
+import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Event;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,6 +41,9 @@ public class LinkedTaskList extends AbstractTaskList {
         first.next = tempPointer;
 
         taskAmount++;
+
+        getObservers().updateAll(Event.VIEW);
+        getObservers().updateAll(Event.UPDATE);
     }
 
     public boolean remove(Task task) {
@@ -60,6 +65,8 @@ public class LinkedTaskList extends AbstractTaskList {
 
                 taskAmount--;
 
+                getObservers().updateAll(Event.VIEW);
+                getObservers().updateAll(Event.UPDATE);
                 return true;
             }
 

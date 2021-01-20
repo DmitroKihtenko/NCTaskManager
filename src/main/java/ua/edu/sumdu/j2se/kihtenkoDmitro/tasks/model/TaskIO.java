@@ -1,9 +1,8 @@
-package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks;
+package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model;
 
 import java.io.*;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class TaskIO {
     public static void write(AbstractTaskList tasks, OutputStream out) {

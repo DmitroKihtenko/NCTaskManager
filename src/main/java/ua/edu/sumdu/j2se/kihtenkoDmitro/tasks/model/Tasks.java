@@ -1,4 +1,6 @@
-package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks;
+package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model;
+
+import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.Task;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -24,8 +26,8 @@ public class Tasks {
     }
 
     public static SortedMap<LocalDateTime, Set<Task>> calendar(Iterable<Task> tasks,
-                                                    LocalDateTime start,
-                                                    LocalDateTime end) {
+                                                               LocalDateTime start,
+                                                               LocalDateTime end) {
         if(start == null || end == null) {
             throw new IllegalArgumentException(
                     "LocalDateTime object has null value!"
