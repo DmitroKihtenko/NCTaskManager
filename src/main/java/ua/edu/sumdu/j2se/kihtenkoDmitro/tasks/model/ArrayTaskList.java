@@ -99,7 +99,7 @@ public class ArrayTaskList extends AbstractTaskList {
 
     @Override
     public Iterator<Task> iterator() {
-        return new Iterator<Task>() {
+        return new Iterator<>() {
             private int index = 0;
 
             @Override

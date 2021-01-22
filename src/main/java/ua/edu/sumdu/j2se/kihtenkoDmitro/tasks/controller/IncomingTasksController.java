@@ -7,8 +7,9 @@ public class IncomingTasksController extends
         ObjectController<IncomingTasks> {
     protected LocalDateTime timeLabel;
 
-    public IncomingTasksController(IncomingTasks nowTime) {
-        super(nowTime);
+    public IncomingTasksController(IncomingTasks incomingTasks) {
+        super(incomingTasks);
+        handleAction = Action.INCOMING_TASKS;
         timeLabel = LocalDateTime.now();
     }
 

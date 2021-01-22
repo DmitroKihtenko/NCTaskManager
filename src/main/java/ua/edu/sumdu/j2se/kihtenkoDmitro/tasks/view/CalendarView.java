@@ -23,7 +23,7 @@ public class CalendarView extends ConsoleView<Calendar> {
         SortedMap<LocalDateTime, Set<Task>> taskCalendar =
                 observable.getTaskCalendar();
         Set<Task> currentSet;
-        boolean firstOut = false;
+        boolean firstOut;
         out.printSeparate();
         out.printLine(
                 "Completion time",

@@ -48,21 +48,21 @@ public abstract class AbstractTaskList extends Observable
     }
 
     @Override
-    public boolean equals(Object otherObject) {
-        if (otherObject == null) {
+    public boolean equals(Object other) {
+        if (other == null) {
             return false;
         }
-        if (this == otherObject) {
+        if (this == other) {
             return true;
         }
-        if (getClass() != otherObject.getClass()) {
+        if (getClass() != other.getClass()) {
             return false;
         }
-        if(taskAmount != ((AbstractTaskList)otherObject).taskAmount) {
+        if(taskAmount != ((AbstractTaskList)other).taskAmount) {
             return false;
         }
 
-        Iterator otherIt = ((AbstractTaskList)otherObject).iterator();
+        Iterator otherIt = ((AbstractTaskList)other).iterator();
         for(Task thisIt : this) {
             if(!thisIt.equals(otherIt.next())) {
                 return false;

@@ -12,8 +12,8 @@ public class LinkedTaskList extends AbstractTaskList {
      * Saving cell class for linked list node.
      */
     class LinkedListPointer {
-        Task storedTask;
-        LinkedListPointer next;
+        private Task storedTask;
+        private LinkedListPointer next;
     }
 
     private LinkedListPointer first;
@@ -98,7 +98,7 @@ public class LinkedTaskList extends AbstractTaskList {
 
     @Override
     public Iterator<Task> iterator() {
-        return new Iterator<Task>() {
+        return new Iterator<>() {
             private LinkedListPointer node = first.next;
             private LinkedListPointer deleteNode = first;
 

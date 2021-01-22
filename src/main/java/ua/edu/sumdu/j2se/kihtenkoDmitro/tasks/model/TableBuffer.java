@@ -1,23 +1,23 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model;
 
 public class TableBuffer extends CInFieldsBuffer {
-    protected String[] fieldNames;
+    protected String[] fieldsNames;
 
-    public TableBuffer(String ... fieldNames) {
-        super(fieldNames.length);
-        if(fieldNames == null) {
+    public TableBuffer(String ... fieldsNames) {
+        super(fieldsNames.length);
+        if(fieldsNames == null) {
             throw new IllegalArgumentException(
                     "Field names parameter list has null value"
             );
         }
-        for(String name : fieldNames) {
+        for(String name : fieldsNames) {
             if(name == null) {
                 throw new IllegalArgumentException(
                         "Field name in parameter list has null value"
                 );
             }
         }
-        this.fieldNames = fieldNames;
+        this.fieldsNames = fieldsNames;
     }
 
     public String[] getLine(int number) {
@@ -28,7 +28,7 @@ public class TableBuffer extends CInFieldsBuffer {
             );
         }
         String[] returnStr = new String[2];
-        returnStr[0] = fieldNames[number - 1];
+        returnStr[0] = fieldsNames[number - 1];
         returnStr[1] = values[number - 1].toString();
         return returnStr;
     }

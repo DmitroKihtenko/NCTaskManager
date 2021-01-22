@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
 public class TaskChangeController extends ObjectController<Task> {
     public TaskChangeController(Task task) {
         super(task);
+        handleAction = Action.CHANGE_TASK;
     }
 
     @Override
     public Action process() {
-        TaskView taskView = new TaskView(observable);
         Menu menu = new Menu(
                 "Set title",
                 "Set start time",
@@ -29,19 +29,29 @@ public class TaskChangeController extends ObjectController<Task> {
                 "Return and save",
                 "Return and roll back"
         );
-        menu.setObservers(observable.getObservers());
         MenuView menuView = new MenuView(menu);
+
         DescriptionBuffer stateBuffer = new DescriptionBuffer();
-        stateBuffer.setObservers(observable.getObservers());
-        StatusInput in = new StatusInput(stateBuffer);
+        stateBuffer.setObservers(menu.getObservers());
         StatusView stateView = new StatusView(stateBuffer);
+
+        StatusInput in = new StatusInput(stateBuffer);
+        in.setLineLimit(30);
+
+        TableBuffer fieldBuffer = new TableBuffer(
+                "Start",
+                "End",
+                "Period (in minutes)"
+        );
+        FieldsView fieldsView = new FieldsView(fieldBuffer);
+
         LocalDateTime start;
         LocalDateTime end;
         int period;
-        in.setLineLimit(30);
+
         do {
             stateBuffer.setDescriptionLines(
-                    "Choose menu action number"
+                    "Enter menu option number"
             );
 
             int choice = in.nextMenu(menu);
@@ -63,24 +73,20 @@ public class TaskChangeController extends ObjectController<Task> {
                     if(observable.isRepeated()) {
                         observable.setTime(in.nextTime(Formatter.
                                         getMainDateInput(),
-                                LocalDateTime.now(),
+                                DateTimeArithmetic.
+                                        trimSeconds(LocalDateTime.
+                                                now()),
                                 observable.getEndTime()));
                     } else {
                         observable.setTime(in.nextTime(Formatter.
                                         getMainDateInput(),
                                 DateTimeArithmetic.
-                                        trimSeconds(LocalDateTime.now()),
+                                        trimSeconds(LocalDateTime.
+                                                now()),
                                 LocalDateTime.MAX));
                     }
                     break;
                 case 3:
-                    TableBuffer fieldBuffer = new TableBuffer(
-                            "Start",
-                            "End",
-                            "Period (in minutes)"
-                    );
-                    fieldBuffer.setObservers(observable.getObservers());
-                    FieldsView fieldsView = new FieldsView(fieldBuffer);
                     stateBuffer.setDescriptionLines(
                             "Set 3 fields",
                             "Task time format example " +
@@ -88,6 +94,7 @@ public class TaskChangeController extends ObjectController<Task> {
                                     format(Formatter.
                                             getMainDateInput())
                     );
+                    fieldBuffer.clear();
                     start = in.nextTime(Formatter.getMainDateInput(),
                             DateTimeArithmetic.trimSeconds(
                                     LocalDateTime.now()),
@@ -102,8 +109,6 @@ public class TaskChangeController extends ObjectController<Task> {
                     period = in.nextIntFrom(1, Integer.MAX_VALUE);
                     fieldBuffer.setField(3, period);
                     observable.setTime(start, end, period);
-                    fieldBuffer.getObservers().detach(fieldsView,
-                            Event.VIEW);
                     break;
                 case 4:
                     if(observable.isRepeated()) {
@@ -113,7 +118,8 @@ public class TaskChangeController extends ObjectController<Task> {
                         observable.setTime(observable.getStartTime(),
                                 in.nextTime(Formatter.
                                         getMainDateInput(),
-                                observable.getStartTime(),
+                                observable.getStartTime().
+                                        plusMinutes(1),
                                 LocalDateTime.MAX),
                                 observable.getRepeatInterval());
                     } else {
@@ -144,20 +150,8 @@ public class TaskChangeController extends ObjectController<Task> {
                     observable.setActive(in.nextBoolean());
                     break;
                 case 7:
-                    observable.getObservers().detach(stateView,
-                            Event.VIEW);
-                    observable.getObservers().detach(menuView,
-                            Event.VIEW);
-                    observable.getObservers().detach(taskView,
-                            Event.VIEW);
                     return Action.SUCCESS;
                 default:
-                    observable.getObservers().detach(stateView,
-                            Event.VIEW);
-                    observable.getObservers().detach(menuView,
-                            Event.VIEW);
-                    observable.getObservers().detach(taskView,
-                            Event.VIEW);
                     return Action.FAIL;
             }
         } while (true);

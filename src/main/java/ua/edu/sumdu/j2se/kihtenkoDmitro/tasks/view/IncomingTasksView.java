@@ -7,7 +7,7 @@ import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.service.Formatter;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.util.TableCOut;
 
 public class IncomingTasksView extends ConsoleView<IncomingTasks> {
-    TableCOut out;
+    protected TableCOut out;
 
     public IncomingTasksView(IncomingTasks tasks) {
         super(tasks);

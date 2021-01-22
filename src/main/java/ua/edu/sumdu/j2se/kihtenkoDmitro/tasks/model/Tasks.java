@@ -1,19 +1,19 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model;
 
-import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.Task;
-
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class Tasks {
-    public static Iterable<Task> incoming(Iterable<Task> tasks, LocalDateTime from, LocalDateTime to) {
+    public static Iterable<Task> incoming(Iterable<Task> tasks,
+                                          LocalDateTime from,
+                                          LocalDateTime to) {
         if(from == null || to == null || from.isAfter(to)) {
             throw new IllegalArgumentException(
                     "Invalid interval parameters!"
             );
         }
 
-        LinkedList<Task> retTasks = new LinkedList<Task>();
+        LinkedList<Task> retTasks = new LinkedList<>();
         LocalDateTime nextTime;
 
         for(Task currentTask : tasks) {

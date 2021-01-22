@@ -73,7 +73,7 @@ public class CInFieldsBuffer extends Observable {
     }
 
     public void clear() {
-        setCurrentField(1);
+        values[0] = currentFieldStr;
         for(int counter = 1; counter < getFieldsAmount(); counter++) {
             values[counter] = emptyFieldStr;
         }

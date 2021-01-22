@@ -5,19 +5,19 @@ import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.service.Formatter;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.util.TableCOut;
 
 public class TaskView extends ConsoleView<Task> {
-    protected TableCOut view;
+    protected TableCOut out;
 
     public TaskView(Task task) {
         super(task);
-        view = new TableCOut();
-        view.setColumnsWidth(20, 9, 11, 16, 16, 16);
+        out = new TableCOut();
+        out.setColumnsWidth(20, 9, 11, 16, 16, 16);
     }
 
     @Override
     public void update() {
-        view.setColumnsAligns();
-        view.printSeparate();
-        view.printLine(
+        out.setColumnsAligns();
+        out.printSeparate();
+        out.printLine(
                 "Title",
                 "Is active",
                 "Is repeated",
@@ -25,7 +25,7 @@ public class TaskView extends ConsoleView<Task> {
                 "End time",
                 "Period"
         );
-        view.printLine(
+        out.printLine(
                 observable.getTitle(),
                 observable.isActive(),
                 observable.isRepeated(),
@@ -34,6 +34,6 @@ public class TaskView extends ConsoleView<Task> {
                 observable.getEndTime().
                         format(Formatter.getMainDateOutput()),
                 observable.getRepeatInterval());
-        view.printSeparate();
+        out.printSeparate();
     }
 }

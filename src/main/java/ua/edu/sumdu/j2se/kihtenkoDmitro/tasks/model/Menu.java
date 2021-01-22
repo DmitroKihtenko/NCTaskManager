@@ -3,14 +3,14 @@ package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Event;
 
 public class Menu extends Observable {
-    private int size;
-    private String[] options;
+    protected int size;
+    protected String[] options;
 
     public Menu(String ... options) {
-        setList(options);
+        setOptions(options);
     }
 
-    public void setList(String ... options) {
+    public void setOptions(String ... options) {
         if(options == null) {
             throw new IllegalArgumentException(
                     "String parameters list has null value"

@@ -2,16 +2,16 @@ package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks;
 
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.controller.*;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.*;
-import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.service.DateTimeArithmetic;
-import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Event;
+import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.AllTasksView;
+import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.CalendarView;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.IncomingTasksView;
 
 import java.io.*;
-import java.time.LocalDateTime;
 
 public class Main {
 	public static void main(String[] args) {
 		AbstractTaskList generalTaskList = new ArrayTaskList();
+
 		File tasksFile = new File("SavedTasks.dat");
 		try(FileInputStream tasksInput = new FileInputStream(tasksFile)) {
 			TaskIO.read(generalTaskList, tasksInput);
@@ -19,19 +19,18 @@ public class Main {
 			generalTaskList = new ArrayTaskList();
 		}
 
-		Calendar calendar = new Calendar(generalTaskList);
+		AllTasksView allTasksView = new AllTasksView(generalTaskList);
 
 		IncomingTasks incomingTasks = new
 				IncomingTasks(generalTaskList);
-		IncomingTasksView view = new IncomingTasksView(incomingTasks);
-		IncomingTasksController controller = new
+		IncomingTasksView incomingTasksView =
+				new IncomingTasksView(incomingTasks);
+		IncomingTasksController itc = new
 				IncomingTasksController(incomingTasks);
-		generalTaskList.setObservers(incomingTasks.getObservers());
-		generalTaskList.getObservers().attach(incomingTasks,
-				Event.UPDATE);
-		calendar.setObservers(incomingTasks.getObservers());
+		Calendar calendar = new Calendar(generalTaskList);
+		CalendarView calendarView = new CalendarView(calendar);
 		ControllerThread thread =
-				new ControllerThread(controller);
+				new ControllerThread(itc);
 
 		GeneralController gc = new GeneralController(Action.MAIN_MENU);
 
@@ -42,6 +41,8 @@ public class Main {
 		gc.attach(mc);
 		gc.attach(atc);
 		gc.attach(cc);
+
+		incomingTasksView.update();
 
 		thread.start();
 

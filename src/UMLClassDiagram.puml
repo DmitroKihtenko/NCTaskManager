@@ -1,0 +1,499 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface Cloneable
+interface Externalizable
+interface Iterable
+interface Thread
+
+class Task {
+-title: String
+-start: LocalDateTime
+-end: LocalDateTime
+-interval: int
+-isPeriodical: boolean
+-isActive: boolean
+
++Task(title: String, time: LocalDateTime)
++Task(title: String, start: LocalDateTime, end: LocalDateTime)
+
++setTime(time: LocalDateTime)
++setTime(start: LocalDateTime, end: LocalDateTime)
+
++nextTimeAfter(time: LocalDateTime): LocalDateTime
++equals(other: Object): boolean
++hashCode(): int
++clone(): Task
++toString(): String
++writeExternal(out: ObjectOutput)
++readExternal(in: ObjectInput)
+}
+
+abstract class AbstractTaskList {
+#taskAmount: int
+#type: static ListTypes.types;
+
++add(task: Task)
++remove(task: Task): boolean
++getTask(index: int): Task
++getStream(): Stream<Task>
++timeTruncate(from: LocalDateTime, to: LocalDateTime)
++size(): int
++equals(other: Object): boolean
++hashCode(): int
++toString(): String
+}
+
+class LinkedListPointer {
+-storedTask: Task
+-next: LinkedListPointer
+}
+
+class LinkedTaskList {
+-first: LinkedListPointer
+
++add(task: Task)
++remove(task: Task): boolean
++getTask(index: int): Task
++getStream(): Stream<Task>
+}
+
+class ArrayTaskList {
+-RESIZE_INTERVAL: final static int
+-taskArr: Task[]
+
++add(task: Task)
++remove(task: Task): boolean
++getTask(index: int): Task
++getStream(): Stream<Task>
+}
+
+enum types {
+ARRAY
+LINKED
+}
+
+class ListTypes {
+}
+
+class TaskListFactory {
++createTaskList(type: ListTypes.types): AbstractTaskList
+}
+
+class TaskIO {
++write(tasks: AbstractTaskList, out: OutputStream): static
++read(tasks: AbstractTaskList, in: InputStream): static
++writeBinary(tasks: AbstractTaskList, file: File): static
++readBinary(tasks: AbstractTaskList, file: File): static
++write(tasks: AbstractTaskList, out: Writer): static
++read(tasks: AbstractTaskList, in: Reader): static
++writeText(AbstractTaskList, file: File): static
++readText(tasks: AbstractTaskList, file: File): static
+}
+
+class Tasks {
++incoming(tasks: Iterable<Task>, from: LocalDateTime, to: LocalDateTime): static Iterable<Task>
++calendar(tasks: Iterable<Task>, start: LocalDateTime, end: LocalDateTime): static SortedMap<LocalDateTime, Set<Task>>
+}
+
+class Menu {
+#size: int
+#options: String[]
+
++Menu(options: String ...)
+
++setOptions(options: String ...)
++getOptions(): String[]
++getSize(): int
+}
+
+class Calendar {
+#taskList: AbstractTaskList
+#taskCalendar: SortedMap<LocalDateTime, Set<Task>>
+
++Calendar(taskList: AbstractTaskList)
+}
+
+class IncomingTasks {
+#generalTasks: AbstractTaskList
+#listIncoming: Iterable<Task>
+#listCurrent: LinkedTaskList
+#checkInterval: int
+
++IncomingTasks(tasks: AbstractTaskList)
+
++check()
++getCheckInterval(): int
++getIncomingList(): Iterable<Task>
++getCurrentList(): LinkedTaskList
++update()
+}
+
+class CInFieldsBuffer {
+#values: Object[]
+#currentField: int
+#currentFieldStr: static String
+#emptyFieldStr: static String
+
++CInFieldsBuffer(fieldsAmount: int)
+
++setField(number: int, field: Object)
++setField(number: int, field: Object, nextCurrent: int)
++setCurrentField(number: int)
++getCurrentField(): int
++getField(number: int): Object
+}
+
+class CInStatusBuffer {
+#status: String
+#okStatus: static String
+
++setStatus(status: String)
++setStatusOk()
++getStatus(): String
+}
+
+class TableBuffer {
+#fieldNames: String[]
+
++TableBuffer(fieldNames: String ...)
+
++getLine(number: int): String ...
+}
+
+class DescriptionBuffer {
+#descriptionLines: String[]
+
++setDescriptionLines(lines: String ...)
++getLines(): String[]
+}
+
+interface ObserversList {
+attach(observer: Observer, event: Event)
+detach(observer: Observer, event: Event): boolean
+updateAll(event: Event)
+clone(): ObserversList
+}
+
+class ObserversLinkedMap {
+-observers: HashMap<Event, LinkedList<Observer>>
+
++attach(observer: Observer, event: Event)
++detach(observer: Observer, event: Event): boolean
++updateAll(event: Event)
++clone(): ObserversList
+}
+
+abstract class Observable {
+-observers: ObserversList
+
++setObservers(list: ObserversList)
++getObservers(): ObserversList
+}
+
+class DateTimeArithmetic {
++trimSeconds(time: LocalDateTime): static LocalDateTime
+}
+
+class Formatter {
+#mainDay: static DateTimeFormatter
+#mainTime: static DateTimeFormatter
+#inputDate: static DateTimeFormatter
+#outputDate: static DateTimeFormatter
+
++getMainDay(): static DateTimeFormatter
++getMainTime(): static DateTimeFormatter
++getMainDateInput(): static DateTimeFormatter
++getMainDateOutput(): static DateTimeFormatter
+}
+
+class StringChecker {
++checkCtrlChars(str: String): static boolean
++checkEmpty(str: String)): static boolean
+}
+
+class LineCOut {
++printLine(line: String)
++printLines(lines: String ...)
+}
+
+class SeparateCOut {
+#separatorSymbol: char
+#separatorLen: int
+
++printSeparate()
+}
+
+enum Alignment {
+LEFT
+RIGHT
+}
+
+class TableCOut {
+#cellsIndent: int
+#indentSymbol: char
+#columnsWidths: int[]
+#columnsAligns: Alignment
+
++setColumnsWidth(columnsWidths: int ...)
++setColumnsAligns(values: Alignment ...)
++printLine(cells: Object ...)
+}
+
+enum Event {
+VIEW
+UPDATE
+LOG
+}
+
+interface Observer {
+update()
+}
+
+abstract class ConsoleView<T> {
+#observable: T
+
++ConsoleView(observable: Observable)
+}
+
+class AllTasksView {
+#out: TableCOut
+
++AllTasksView(tasks: AbstractTaskList)
+
++update()
+}
+
+class CalendarView {
+#out: TableCOut
+
++CalendarView(tasksCalendar: Calendar)
+
++update()
+}
+
+class FieldsView {
+#out: TableCOut
+
++FieldsView(buffer: TableBuffer)
+
++update()
+}
+
+class IncomingTasksView {
+#out: TableCOut
+
++IncomingTasksView(tasks: IncomingTasks)
+
++update()
+}
+
+class MenuView {
+#out: SeparateCOut
+
++MenuView(menu: Menu)
+
++update()
+}
+
+class StatusView {
+#out: SeparateCOut
+
++StatusView(buffer: DescriptionBuffer)
+
++update()
+}
+
+class TaskView {
+#out: TableCOut
+
++TaskView(task: Task)
+
++update()
+}
+
+enum Action {
+NOTHING
+SUCCESS
+FAIL
+MAIN_MENU
+ALL_TASKS
+CHANGE_TASK
+CALENDAR_TASKS
+CHANGE_TASKS
+EXIT
+}
+
+interface Controller {
+process(): Action
+}
+
+abstract class ControllerHandler {
+#handleAction: Action
+
++canHandle(): boolean
+}
+
+abstract class ObjectController<T> {
+#observable: T
+
++ObjectController(observable: Observable)
+}
+
+class StatusInput {
+#statusBuffer: CInStatusBuffer
+#inputLineLimit: int
+
++StatusInput(status: CInStatusBuffer)
+
++setLineLimit(limit: int)
++getLineLimit(): int
++nextIntFrom(from: int, to: int): int
++nextBoolean(): boolean
++nextTime(format: DateTimeFormatter, from: LocalDateTime, to: LocalDateTime): LocalDateTime
++nextMenu(menu: Menu): int
++nextLine(): String
++nextTextLine(): String
++setBuffer(status: CInStatusBuffer)
++getBuffer(): CInStatusBuffer
+}
+
+class GeneralController {
+#controllers: LinkedList<ControllerHandler>
+#currentAction: Action
+
++GeneralController(startAction: Action)
+
++attach(controller: ControllerHandler)
++process(): Action
+}
+
+class IncomingTasksController {
+#timeLabel: LocalDateTime
+
++IncomingTasksController(incomingTasks: IncomingTasks)
+
++process(): Action
+}
+
+class MainMenuController {
++MainMenuController(tasks: IncomingTasks)
+
++process(): Action
+}
+
+class TaskChangeController {
++TaskChangeController(task: Task)
+
++process(): Action
+}
+
+class CalendarController {
++CalendarController(tasksCalendar: Calendar)
+
++process(): Action
+}
+
+class AllTasksController {
++AllTasksController(tasks: AbstractTaskList)
+
++process(): Action
+}
+
+class Main {
++main(args: String[]): static
+}
+
+class ControllerThread {
+#controller: Controller
+
++ControllerThread(controller: Controller)
+
++run()
+}
+
+ObserversList ..|> Cloneable
+
+ObserversLinkedMap ..|> ObserversList
+ObserversLinkedMap o-- Observer
+ObserversLinkedMap o-- Event
+
+
+Observable o-- ObserversList
+
+Task ..|> Cloneable
+Task ..|> Externalizable
+Task --|> Observable
+
+AbstractTaskList ..|> Cloneable
+AbstractTaskList ..|> Iterable
+AbstractTaskList --|> Observable
+AbstractTaskList o-- ListTypes
+
+LinkedTaskList *-- LinkedListPointer
+LinkedTaskList *-- Task
+LinkedTaskList --|> AbstractTaskList
+
+ArrayTaskList *-- Task
+ArrayTaskList --|> AbstractTaskList
+
+CInFieldsBuffer --|> Observable
+
+CInStatusBuffer --|> Observable
+
+TableBuffer --> CInFieldsBuffer
+
+DescriptionBuffer --> CInStatusBuffer
+
+IncomingTasks ..|> Observer
+IncomingTasks --|> Observable
+IncomingTasks o-- AbstractTaskList
+IncomingTasks o-- LinkedTaskList
+
+Menu --|> Observable
+
+Calendar --|> Observable
+Calendar o-- AbstractTaskList
+
+SeparateCOut --> LineCOut
+TableCOut --> SeparateCOut
+
+ConsoleView ..|> Observer
+
+AllTasksView --|> ConsoleView
+CalendarView --|> ConsoleView
+FieldsView --|> ConsoleView
+IncomingTasksView --|> ConsoleView
+MenuView --|> ConsoleView
+StatusView --|> ConsoleView
+TaskView --|> ConsoleView
+
+AllTasksView o-- TableCOut
+CalendarView o-- TableCOut
+FieldsView o-- TableCOut
+IncomingTasksView o-- TableCOut
+MenuView o-- SeparateCOut
+StatusView o-- SeparateCOut
+TaskView o-- TableCOut
+
+ControllerHandler ..|> Controller
+ObjectController --|> ControllerHandler
+AllTasksController --|> ObjectController
+CalendarController --|> ObjectController
+IncomingTasksController --|> ObjectController
+MainMenuController --|> ObjectController
+TaskChangeController --|> ObjectController
+GeneralController ..|> Controller
+GeneralController *-- ControllerHandler
+
+ControllerThread ..|> Thread
+
+StatusInput o-- CInStatusBuffer
+
+ControllerHandler o-- Action
+
+ListTypes *-- types
+
+TableCOut o-- Alignment
+
+@enduml

@@ -1,12 +1,8 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.util;
 
-import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.controller.Action;
-import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.controller.util.Console;
-import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.controller.util.StatusInput;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Event;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Observer;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -56,13 +52,6 @@ public class ObserversLinkedMap implements ObserversList {
 
     @Override
     public void updateAll(Event event) {
-        if(event == Event.VIEW) {
-            try {
-                Console.clear();
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
         if(observers.containsKey(event)) {
             for(Observer temp : observers.get(event)) {
                 temp.update();
@@ -73,7 +62,6 @@ public class ObserversLinkedMap implements ObserversList {
     @Override
     public ObserversList clone() {
         ObserversList returnList = new ObserversLinkedMap();
-        LinkedList<Observer> list;
         for(Event key : observers.keySet()) {
             for(Observer temp : observers.get(key)) {
                 returnList.attach(temp, key);

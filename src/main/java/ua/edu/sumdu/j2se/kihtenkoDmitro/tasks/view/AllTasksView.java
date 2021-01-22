@@ -41,8 +41,8 @@ public class AllTasksView extends
                                 Formatter.getMainDateOutput()),
                         task.getRepeatInterval()
                 );
-                counter++;
             }
+            counter++;
         }
         counter = 1;
         out.printSeparate();
@@ -68,8 +68,8 @@ public class AllTasksView extends
                                 Formatter.getMainDateOutput()),
                         task.getRepeatInterval()
                 );
-                counter++;
             }
+            counter++;
         }
         out.printSeparate();
     }

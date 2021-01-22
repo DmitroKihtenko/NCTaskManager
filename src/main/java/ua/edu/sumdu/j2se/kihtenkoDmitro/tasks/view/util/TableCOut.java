@@ -42,13 +42,13 @@ public class TableCOut extends SeparateCOut {
         indentSymbol = symbol;
     }
 
-    public void setColumnsWidth(int ... rowsWidths) {
-        if(rowsWidths == null) {
+    public void setColumnsWidth(int ... columnsWidths) {
+        if(columnsWidths == null) {
             throw new IllegalArgumentException(
                     "Parameter list has null value"
             );
         }
-        columnsWidths = rowsWidths;
+        this.columnsWidths = columnsWidths;
     }
 
     public void setColumnsAligns(Alignment ... values) {

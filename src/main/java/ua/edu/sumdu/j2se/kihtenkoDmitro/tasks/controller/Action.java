@@ -7,6 +7,7 @@ public enum Action {
     MAIN_MENU,
     ALL_TASKS,
     CHANGE_TASK,
-    CALENDAR_TASK,
+    CALENDAR_TASKS,
+    INCOMING_TASKS,
     EXIT
 }

@@ -4,7 +4,7 @@ import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.TableBuffer;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.util.TableCOut;
 
 public class FieldsView extends ConsoleView<TableBuffer> {
-    private TableCOut out;
+    protected TableCOut out;
 
     public FieldsView(TableBuffer buffer) {
         super(buffer);

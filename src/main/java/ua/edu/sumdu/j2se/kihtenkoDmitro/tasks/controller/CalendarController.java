@@ -12,38 +12,38 @@ public class CalendarController extends
         ObjectController<Calendar> {
     public CalendarController(Calendar tasksCalendar) {
         super(tasksCalendar);
-        handleAction = Action.CALENDAR_TASK;
+        handleAction = Action.CALENDAR_TASKS;
     }
 
     @Override
     public Action process() {
-        CalendarView calendarView = new CalendarView(observable);
         Menu menu = new Menu(
                 "Enter new time period",
                 "Back"
         );
-        menu.setObservers(observable.getObservers());
         MenuView menuView = new MenuView(menu);
+
         DescriptionBuffer statusBuffer = new DescriptionBuffer();
-        statusBuffer.setObservers(observable.getObservers());
+        statusBuffer.setObservers(menu.getObservers());
         StatusView statusView = new StatusView(statusBuffer);
+
         StatusInput in = new StatusInput(statusBuffer);
         TableBuffer fieldsBuffer = new TableBuffer(
                 "Begin time",
                 "End time"
         );
+
         LocalDateTime from = LocalDateTime.now().minusMinutes(1);
         LocalDateTime to = from.plusDays(1);
         fieldsBuffer.setField(1, from.format(Formatter.
                 getMainDateOutput()));
+        FieldsView fieldsView = new FieldsView(fieldsBuffer);
         fieldsBuffer.setField(2, to.format(Formatter.
                 getMainDateOutput()));
         observable.setTaskCalendar(from, to);
-        fieldsBuffer.setObservers(observable.getObservers());
-        FieldsView fieldsView = new FieldsView(fieldsBuffer);
         do {
             statusBuffer.setDescriptionLines(
-                    "Enter menu choice"
+                    "Enter menu option number"
             );
             int choice = in.nextMenu(menu);
 
@@ -65,14 +65,6 @@ public class CalendarController extends
                         getMainDateOutput()));
                 observable.setTaskCalendar(from.minusMinutes(1), to);
             } else {
-                observable.getObservers().detach(menuView,
-                        Event.VIEW);
-                observable.getObservers().detach(statusView,
-                        Event.VIEW);
-                observable.getObservers().detach(fieldsView,
-                        Event.VIEW);
-                observable.getObservers().detach(calendarView,
-                        Event.VIEW);
                 return Action.MAIN_MENU;
             }
         } while(true);

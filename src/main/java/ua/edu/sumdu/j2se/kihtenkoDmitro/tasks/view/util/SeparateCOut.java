@@ -32,6 +32,10 @@ public class SeparateCOut extends LineCOut {
         separatorLen = len;
     }
 
+    public int getSeparatorLen() {
+        return separatorLen;
+    }
+
     public void printSeparate() {
         StringBuilder line = new StringBuilder();
         for(int counter = 0; counter < separatorLen;

@@ -351,12 +351,12 @@ public class Task extends Observable implements Cloneable, Externalizable {
         interval = in.readInt();
         start = LocalDateTime.ofEpochSecond(in.readLong(),
                 0, ZoneOffset.UTC);
-        if(interval == 1) {
+        if(interval == 0) {
+            isPeriodical = false;
+        } else {
             isPeriodical = true;
             end = LocalDateTime.ofEpochSecond(in.readLong(),
                     0, ZoneOffset.UTC);
-        } else {
-            isPeriodical = false;
         }
     }
 }

@@ -6,8 +6,8 @@ import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.util.SeparateCOut;
 public class StatusView extends ConsoleView<DescriptionBuffer> {
     protected SeparateCOut out;
 
-    public StatusView(DescriptionBuffer model) {
-        super(model);
+    public StatusView(DescriptionBuffer buffer) {
+        super(buffer);
         out = new SeparateCOut();
     }
 

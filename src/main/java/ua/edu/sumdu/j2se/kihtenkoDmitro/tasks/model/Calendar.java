@@ -7,16 +7,16 @@ import java.util.Set;
 import java.util.SortedMap;
 
 public class Calendar extends Observable {
-    AbstractTaskList taskList;
-    SortedMap<LocalDateTime, Set<Task>> taskCalendar;
+    protected AbstractTaskList taskList;
+    protected SortedMap<LocalDateTime, Set<Task>> taskCalendar;
 
-    public Calendar(AbstractTaskList list) {
-        if(list == null) {
+    public Calendar(AbstractTaskList taskList) {
+        if(taskList == null) {
             throw new IllegalArgumentException(
                     "Tasks list parameter has null value"
             );
         }
-        this.taskList = list;
+        this.taskList = taskList;
     }
 
     public void setTaskList(AbstractTaskList list) {

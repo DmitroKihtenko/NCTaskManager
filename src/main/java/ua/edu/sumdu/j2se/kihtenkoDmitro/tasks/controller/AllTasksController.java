@@ -15,7 +15,8 @@ public class AllTasksController extends
 
     @Override
     public Action process() {
-        AllTasksView tasksView = new AllTasksView(observable);
+        observable.getObservers().updateAll(Event.VIEW);
+
         Menu menu = new Menu(
                 "New task",
                 "Change task",
@@ -23,19 +24,22 @@ public class AllTasksController extends
                 "Remove all outdated",
                 "Back"
         );
-        menu.setObservers(observable.getObservers());
         MenuView menuView = new MenuView(menu);
+
         DescriptionBuffer stateBuffer = new DescriptionBuffer();
-        stateBuffer.setObservers(observable.getObservers());
+        stateBuffer.setObservers(menu.getObservers());
         StatusView statusView = new StatusView(stateBuffer);
+
         StatusInput in = new StatusInput(stateBuffer);
+
         Task task = null;
+        TaskView taskView;
         TaskChangeController controllerChange;
         Action result;
 
         do {
             stateBuffer.setDescriptionLines(
-                    "Enter menu choice"
+                    "Enter menu option number"
             );
             int choice = in.nextMenu(menu);
 
@@ -43,9 +47,9 @@ public class AllTasksController extends
                 case 1:
                     task = new Task("New task",
                             LocalDateTime.now().plusMinutes(10));
-                    task.setObservers(observable.getObservers());
-                    controllerChange =
-                            new TaskChangeController(task);
+                    taskView = new TaskView(task);
+                    taskView.update();
+                    controllerChange = new TaskChangeController(task);
                     result = controllerChange.process();
                     if(result == Action.SUCCESS) {
                         observable.add(task);
@@ -55,6 +59,7 @@ public class AllTasksController extends
                     stateBuffer.setDescriptionLines(
                             "Enter number of task to change"
                     );
+
                     choice = in.nextIntFrom(1, observable.size());
                     try {
                         task = observable.getTask(choice - 1).
@@ -62,9 +67,10 @@ public class AllTasksController extends
                     } catch (CloneNotSupportedException e) {
                         e.printStackTrace();
                     }
-                    task.setObservers(observable.getObservers());
-                    controllerChange =
-                            new TaskChangeController(task);
+                    taskView = new TaskView(task);
+                    taskView.update();
+                    controllerChange = new
+                            TaskChangeController(task);
                     result = controllerChange.process();
                     if(result == Action.SUCCESS) {
                         observable.remove(observable.
@@ -85,12 +91,6 @@ public class AllTasksController extends
                             LocalDateTime.MAX);
                     break;
                 default:
-                    observable.getObservers().detach(menuView,
-                            Event.VIEW);
-                    observable.getObservers().detach(statusView,
-                            Event.VIEW);
-                    observable.getObservers().detach(tasksView,
-                            Event.VIEW);
                     return Action.MAIN_MENU;
             }
         } while (true);

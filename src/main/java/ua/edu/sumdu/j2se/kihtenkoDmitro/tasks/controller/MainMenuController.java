@@ -4,7 +4,6 @@ import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.controller.util.StatusInput;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.IncomingTasks;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.Menu;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.DescriptionBuffer;
-import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Event;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.MenuView;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.StatusView;
 
@@ -19,27 +18,26 @@ public class MainMenuController extends
     public Action process() {
         Menu menu = new Menu(
                 "Review and change all tasks list",
-                "Review task list on period",
+                "Review tasks list on period",
                 "Exit"
         );
-        menu.setObservers(observable.getObservers());
         MenuView menuView = new MenuView(menu);
+
         DescriptionBuffer stateBuffer = new DescriptionBuffer();
-        stateBuffer.setObservers(observable.getObservers());
+        stateBuffer.setObservers(menu.getObservers());
         StatusView stateView = new StatusView(stateBuffer);
+
         StatusInput in = new StatusInput(stateBuffer);
         stateBuffer.setDescriptionLines(
-                "Enter menu choice number"
+                "Enter menu option number"
         );
         int number = in.nextMenu(menu);
-        observable.getObservers().detach(menuView, Event.VIEW);
-        observable.getObservers().detach(stateView, Event.VIEW);
 
         switch(number) {
             case 1:
                 return Action.ALL_TASKS;
             case 2:
-                return Action.CALENDAR_TASK;
+                return Action.CALENDAR_TASKS;
             default:
                 return Action.EXIT;
         }

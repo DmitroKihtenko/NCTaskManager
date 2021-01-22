@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 public class StatusInput {
     protected CInStatusBuffer statusBuffer;
-    int inputLineLimit;
+    protected int inputLineLimit;
 
     public StatusInput(CInStatusBuffer status) {
         setBuffer(status);
@@ -84,7 +84,7 @@ public class StatusInput {
         statusBuffer = status;
     }
 
-    public CInStatusBuffer getStatusBuffer() {
+    public CInStatusBuffer getBuffer() {
         return statusBuffer;
     }
 
@@ -120,12 +120,7 @@ public class StatusInput {
     }
 
     public boolean nextBoolean() {
-        int inpNum = nextIntFrom(0, 1);
-        if(inpNum == 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return !(nextIntFrom(0, 1) == 0);
     }
 
     public LocalDateTime nextTime(DateTimeFormatter format,
