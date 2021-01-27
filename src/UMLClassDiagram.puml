@@ -7,6 +7,7 @@ interface Iterable
 interface Thread
 
 class Task {
+-logger: static Logger
 -title: String
 -start: LocalDateTime
 -end: LocalDateTime
@@ -30,14 +31,16 @@ class Task {
 }
 
 abstract class AbstractTaskList {
+-logger: static Logger
 #taskAmount: int
 #type: static ListTypes.types;
 
 +add(task: Task)
 +remove(task: Task): boolean
 +getTask(index: int): Task
++replace(index: int, task: Task)
 +getStream(): Stream<Task>
-+timeTruncate(from: LocalDateTime, to: LocalDateTime)
++timeTruncate(from: LocalDateTime, to: LocalDateTime): boolean
 +size(): int
 +equals(other: Object): boolean
 +hashCode(): int
@@ -50,21 +53,25 @@ class LinkedListPointer {
 }
 
 class LinkedTaskList {
+-logger: static Logger
 -first: LinkedListPointer
 
 +add(task: Task)
 +remove(task: Task): boolean
 +getTask(index: int): Task
++replace(index: int, task: Task)
 +getStream(): Stream<Task>
 }
 
 class ArrayTaskList {
+-logger: static Logger
 -RESIZE_INTERVAL: final static int
 -taskArr: Task[]
 
 +add(task: Task)
 +remove(task: Task): boolean
 +getTask(index: int): Task
++replace(index: int, task: Task)
 +getStream(): Stream<Task>
 }
 
@@ -81,6 +88,8 @@ class TaskListFactory {
 }
 
 class TaskIO {
+-logger: static Logger
+
 +write(tasks: AbstractTaskList, out: OutputStream): static
 +read(tasks: AbstractTaskList, in: InputStream): static
 +writeBinary(tasks: AbstractTaskList, file: File): static
@@ -97,6 +106,7 @@ class Tasks {
 }
 
 class Menu {
+-logger: static Logger
 #size: int
 #options: String[]
 
@@ -108,6 +118,7 @@ class Menu {
 }
 
 class Calendar {
+-logger: static Logger
 #taskList: AbstractTaskList
 #taskCalendar: SortedMap<LocalDateTime, Set<Task>>
 
@@ -115,21 +126,23 @@ class Calendar {
 }
 
 class IncomingTasks {
+-logger: static Logger
 #generalTasks: AbstractTaskList
-#listIncoming: Iterable<Task>
-#listCurrent: LinkedTaskList
+#mapIncoming: Map<LocalDateTime, Set<Task>>
+#setCurrent: Set<Task>
 #checkInterval: int
 
 +IncomingTasks(tasks: AbstractTaskList)
 
 +check()
 +getCheckInterval(): int
-+getIncomingList(): Iterable<Task>
-+getCurrentList(): LinkedTaskList
++getMapIncoming(): Map<LocalDateTime, Set<Task>>
++getSetCurrent(): Set<Task>
 +update()
 }
 
 class CInFieldsBuffer {
+-logger: static Logger
 #values: Object[]
 #currentField: int
 #currentFieldStr: static String
@@ -145,6 +158,7 @@ class CInFieldsBuffer {
 }
 
 class CInStatusBuffer {
+-logger: static Logger
 #status: String
 #okStatus: static String
 
@@ -154,6 +168,7 @@ class CInStatusBuffer {
 }
 
 class TableBuffer {
+-logger: static Logger
 #fieldNames: String[]
 
 +TableBuffer(fieldNames: String ...)
@@ -162,6 +177,7 @@ class TableBuffer {
 }
 
 class DescriptionBuffer {
+-logger: static Logger
 #descriptionLines: String[]
 
 +setDescriptionLines(lines: String ...)
@@ -172,15 +188,18 @@ interface ObserversList {
 attach(observer: Observer, event: Event)
 detach(observer: Observer, event: Event): boolean
 updateAll(event: Event)
+updateAll()
 clone(): ObserversList
 }
 
 class ObserversLinkedMap {
+-logger: static Logger
 -observers: HashMap<Event, LinkedList<Observer>>
 
 +attach(observer: Observer, event: Event)
 +detach(observer: Observer, event: Event): boolean
 +updateAll(event: Event)
++updateAll()
 +clone(): ObserversList
 }
 
@@ -192,27 +211,29 @@ abstract class Observable {
 }
 
 class DateTimeArithmetic {
++trimNanos(time: LocalDateTime): static LocalDateTime
 +trimSeconds(time: LocalDateTime): static LocalDateTime
 }
 
 class Formatter {
-#mainDay: static DateTimeFormatter
-#mainTime: static DateTimeFormatter
+#inputTime: static DateTimeFormatter
 #inputDate: static DateTimeFormatter
 #outputDate: static DateTimeFormatter
 
-+getMainDay(): static DateTimeFormatter
-+getMainTime(): static DateTimeFormatter
++getMainTimeInput(): static DateTimeFormatter
 +getMainDateInput(): static DateTimeFormatter
 +getMainDateOutput(): static DateTimeFormatter
 }
 
 class StringChecker {
-+checkCtrlChars(str: String): static boolean
+-logger: static Logger
+
 +checkEmpty(str: String)): static boolean
 }
 
 class LineCOut {
+-logger: static Logger
+
 +printLine(line: String)
 +printLines(lines: String ...)
 }
@@ -230,6 +251,8 @@ RIGHT
 }
 
 class TableCOut {
+-logger: static Logger
+
 #cellsIndent: int
 #indentSymbol: char
 #columnsWidths: int[]
@@ -341,6 +364,8 @@ abstract class ObjectController<T> {
 }
 
 class StatusInput {
+-logger: static Logger
+
 #statusBuffer: CInStatusBuffer
 #inputLineLimit: int
 
@@ -359,6 +384,7 @@ class StatusInput {
 }
 
 class GeneralController {
+-logger: static Logger
 #controllers: LinkedList<ControllerHandler>
 #currentAction: Action
 
@@ -377,30 +403,40 @@ class IncomingTasksController {
 }
 
 class MainMenuController {
+-logger: static Logger
+
 +MainMenuController(tasks: IncomingTasks)
 
 +process(): Action
 }
 
 class TaskChangeController {
+-logger: static Logger
+
 +TaskChangeController(task: Task)
 
 +process(): Action
 }
 
 class CalendarController {
+-logger: static Logger
+
 +CalendarController(tasksCalendar: Calendar)
 
 +process(): Action
 }
 
 class AllTasksController {
+-logger: static Logger
+
 +AllTasksController(tasks: AbstractTaskList)
 
 +process(): Action
 }
 
 class Main {
+-logger: static Logger
+
 +main(args: String[]): static
 }
 

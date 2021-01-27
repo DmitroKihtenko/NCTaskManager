@@ -9,6 +9,7 @@ public class MenuView extends ConsoleView<Menu> {
     public MenuView(Menu menu) {
         super(menu);
         out = new SeparateCOut();
+        out.setSeparatorLen(50);
     }
 
     @Override

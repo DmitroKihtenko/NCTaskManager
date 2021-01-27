@@ -1,5 +1,6 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.controller;
 
+import org.apache.log4j.Logger;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.controller.util.StatusInput;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.IncomingTasks;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.Menu;
@@ -9,6 +10,9 @@ import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.StatusView;
 
 public class MainMenuController extends
         ObjectController<IncomingTasks> {
+    private static final Logger logger =
+            Logger.getLogger(MainMenuController.class);
+
     public MainMenuController(IncomingTasks tasks) {
         super(tasks);
         handleAction = Action.MAIN_MENU;
@@ -16,16 +20,20 @@ public class MainMenuController extends
 
     @Override
     public Action process() {
+        logger.debug(
+                "Controller " + this + " is active"
+        );
+
         Menu menu = new Menu(
                 "Review and change all tasks list",
                 "Review tasks list on period",
-                "Exit"
+                "Exit and save"
         );
-        MenuView menuView = new MenuView(menu);
+        new MenuView(menu);
 
         DescriptionBuffer stateBuffer = new DescriptionBuffer();
         stateBuffer.setObservers(menu.getObservers());
-        StatusView stateView = new StatusView(stateBuffer);
+        new StatusView(stateBuffer);
 
         StatusInput in = new StatusInput(stateBuffer);
         stateBuffer.setDescriptionLines(

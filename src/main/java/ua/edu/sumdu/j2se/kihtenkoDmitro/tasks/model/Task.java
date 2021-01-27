@@ -1,5 +1,6 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model;
 
+import org.apache.log4j.Logger;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.service.DateTimeArithmetic;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Event;
 
@@ -13,6 +14,8 @@ import java.time.ZoneOffset;
  * @version 1.0
  */
 public class Task extends Observable implements Cloneable, Externalizable {
+    private static final Logger logger =
+            Logger.getLogger(Task.class);
 
     /**
      * Stores a title of task.
@@ -90,7 +93,12 @@ public class Task extends Observable implements Cloneable, Externalizable {
      */
     public void setTitle(String title) {
         this.title = title;
-        getObservers().updateAll(Event.VIEW);
+
+        logger.debug(
+                "Saved new title of task" + this
+        );
+
+        getObservers().updateAll();
     }
 
     /**
@@ -107,6 +115,11 @@ public class Task extends Observable implements Cloneable, Externalizable {
      */
     public void setActive(boolean active) {
         this.isActive = active;
+
+        logger.debug(
+                "Set new activity of task " + this
+        );
+
         getObservers().updateAll(Event.VIEW);
     }
 
@@ -135,7 +148,12 @@ public class Task extends Observable implements Cloneable, Externalizable {
         if(this.isPeriodical) {
             this.isPeriodical = false;
         }
-        getObservers().updateAll(Event.VIEW);
+
+        logger.debug(
+                "Set new start time of task " + this
+        );
+
+        getObservers().updateAll();
     }
 
     /**
@@ -166,7 +184,13 @@ public class Task extends Observable implements Cloneable, Externalizable {
         if(!this.isPeriodical) {
             this.isPeriodical = true;
         }
-        getObservers().updateAll(Event.VIEW);
+
+        logger.debug(
+                "Set new start time, end time and interval of " +
+                        "task " + this
+        );
+
+        getObservers().updateAll();
     }
 
     /**

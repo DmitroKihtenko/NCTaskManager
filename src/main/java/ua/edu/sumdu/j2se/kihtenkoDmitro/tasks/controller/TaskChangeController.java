@@ -1,5 +1,6 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.controller;
 
+import org.apache.log4j.Logger;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.controller.util.StatusInput;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.TableBuffer;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.DescriptionBuffer;
@@ -12,6 +13,9 @@ import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.service.Formatter;
 import java.time.LocalDateTime;
 
 public class TaskChangeController extends ObjectController<Task> {
+    private static final Logger logger =
+            Logger.getLogger(TaskChangeController.class);
+
     public TaskChangeController(Task task) {
         super(task);
         handleAction = Action.CHANGE_TASK;
@@ -19,6 +23,10 @@ public class TaskChangeController extends ObjectController<Task> {
 
     @Override
     public Action process() {
+        logger.debug(
+                "Controller " + this + " is active"
+        );
+
         Menu menu = new Menu(
                 "Set title",
                 "Set start time",
@@ -29,11 +37,11 @@ public class TaskChangeController extends ObjectController<Task> {
                 "Return and save",
                 "Return and roll back"
         );
-        MenuView menuView = new MenuView(menu);
+        new MenuView(menu);
 
         DescriptionBuffer stateBuffer = new DescriptionBuffer();
         stateBuffer.setObservers(menu.getObservers());
-        StatusView stateView = new StatusView(stateBuffer);
+        new StatusView(stateBuffer);
 
         StatusInput in = new StatusInput(stateBuffer);
         in.setLineLimit(30);
@@ -43,7 +51,7 @@ public class TaskChangeController extends ObjectController<Task> {
                 "End",
                 "Period (in minutes)"
         );
-        FieldsView fieldsView = new FieldsView(fieldBuffer);
+        new FieldsView(fieldBuffer);
 
         LocalDateTime start;
         LocalDateTime end;
@@ -61,6 +69,11 @@ public class TaskChangeController extends ObjectController<Task> {
                     stateBuffer.setDescriptionLines(
                             "Enter title of task"
                     );
+
+                    logger.debug("Attempt to set title of task" +
+                            observable
+                    );
+
                     observable.setTitle(in.nextTextLine());
                     break;
                 case 2:
@@ -70,6 +83,11 @@ public class TaskChangeController extends ObjectController<Task> {
                                             format(Formatter.
                                                     getMainDateInput())
                     );
+
+                    logger.debug("Attempt to set start time of" +
+                            " task" + observable
+                    );
+
                     if(observable.isRepeated()) {
                         observable.setTime(in.nextTime(Formatter.
                                         getMainDateInput(),
@@ -95,6 +113,12 @@ public class TaskChangeController extends ObjectController<Task> {
                                             getMainDateInput())
                     );
                     fieldBuffer.clear();
+
+                    logger.debug("Attempt to set start time, end" +
+                            "end time and interval of task " +
+                            observable
+                    );
+
                     start = in.nextTime(Formatter.getMainDateInput(),
                             DateTimeArithmetic.trimSeconds(
                                     LocalDateTime.now()),
@@ -111,10 +135,15 @@ public class TaskChangeController extends ObjectController<Task> {
                     observable.setTime(start, end, period);
                     break;
                 case 4:
+                    logger.debug("Attempt to set end time of task" +
+                            observable
+                    );
+
                     if(observable.isRepeated()) {
                         stateBuffer.setDescriptionLines(
                                 "Enter end time of repeated task"
                         );
+
                         observable.setTime(observable.getStartTime(),
                                 in.nextTime(Formatter.
                                         getMainDateInput(),
@@ -129,6 +158,10 @@ public class TaskChangeController extends ObjectController<Task> {
                     }
                     break;
                 case 5:
+                    logger.debug("Attempt to set interval of task" +
+                            observable
+                    );
+
                     if(observable.isRepeated()) {
                         stateBuffer.setDescriptionLines(
                                 "Enter interval of repeated task " +
@@ -144,6 +177,10 @@ public class TaskChangeController extends ObjectController<Task> {
                     }
                     break;
                 case 6:
+                    logger.debug("Attempt to set activity of task" +
+                            observable
+                    );
+
                     stateBuffer.setDescriptionLines(
                             "Enter activity (1 - true, " +
                                     "0 - false)");

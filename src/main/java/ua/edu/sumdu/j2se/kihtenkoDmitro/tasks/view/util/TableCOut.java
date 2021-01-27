@@ -1,9 +1,14 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.util;
 
+import org.apache.log4j.Logger;
+
 import java.util.Arrays;
 import java.util.Iterator;
 
 public class TableCOut extends SeparateCOut {
+    private static final Logger logger =
+            Logger.getLogger(TableCOut.class);
+
     protected int cellsIndent;
     protected char indentSymbol;
     protected int[] columnsWidths;
@@ -45,8 +50,15 @@ public class TableCOut extends SeparateCOut {
     public void setColumnsWidth(int ... columnsWidths) {
         if(columnsWidths == null) {
             throw new IllegalArgumentException(
-                    "Parameter list has null value"
+                    "Parameter list has null value!"
             );
+        }
+        for(int width : columnsWidths) {
+            if(width < 3) {
+                throw new IllegalArgumentException(
+                        "Expected column width no less than 3!"
+                );
+            }
         }
         this.columnsWidths = columnsWidths;
     }
@@ -88,6 +100,14 @@ public class TableCOut extends SeparateCOut {
         StringBuilder indent = new StringBuilder();
         for(int counter = 0; counter < cellsIndent; counter++) {
             indent.append(indentSymbol);
+        }
+
+        if(columnsWidths.length < cells.length) {
+            logger.warn(
+                    "The amount of cells is greater than the number" +
+                            " of columns in the table. Extra cells " +
+                            "are ignored"
+            );
         }
 
         if(columnsAligns.length == 1) {

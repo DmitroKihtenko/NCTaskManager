@@ -1,8 +1,13 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.controller;
 
+import org.apache.log4j.Logger;
+
 import java.util.LinkedList;
 
 public class GeneralController implements Controller {
+    private static final Logger logger =
+            Logger.getLogger(GeneralController.class);
+
     protected LinkedList<ControllerHandler> controllers;
     Action currentAction;
 
@@ -30,6 +35,12 @@ public class GeneralController implements Controller {
         do {
             for(ControllerHandler temp : controllers) {
                 if(temp.canHandle(currentAction)) {
+
+                    logger.debug(
+                            "Transferring program control to " +
+                                    "controller " + temp
+                    );
+
                     currentAction = temp.process();
                 }
             }

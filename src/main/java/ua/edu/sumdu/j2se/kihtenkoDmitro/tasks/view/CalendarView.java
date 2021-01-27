@@ -15,6 +15,7 @@ public class CalendarView extends ConsoleView<Calendar> {
     public CalendarView(Calendar tasksCalendar) {
         super(tasksCalendar);
         out = new TableCOut();
+        out.setSeparatorLen(51);
         out.setColumnsWidth(15, 20, 12);
     }
 

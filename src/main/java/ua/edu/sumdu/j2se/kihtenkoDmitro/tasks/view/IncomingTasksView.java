@@ -1,10 +1,13 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view;
 
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.IncomingTasks;
-import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.LinkedTaskList;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.Task;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.service.Formatter;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.util.TableCOut;
+
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Set;
 
 public class IncomingTasksView extends ConsoleView<IncomingTasks> {
     protected TableCOut out;
@@ -12,26 +15,27 @@ public class IncomingTasksView extends ConsoleView<IncomingTasks> {
     public IncomingTasksView(IncomingTasks tasks) {
         super(tasks);
         out = new TableCOut();
+        out.setSeparatorLen(48);
         out.setColumnsWidth(12, 20, 12);
     }
 
     @Override
     public void update() {
-        LinkedTaskList currentList = observable.getCurrentList();
-        Iterable<Task> incomingList =
-                observable.getIncomingList();
+        Set<Task> setCurrent = observable.getSetCurrent();
+        Map<LocalDateTime, Set<Task>> mapIncoming =
+                observable.getMapIncoming();
         out.printSeparate();
         out.printLine("Tasks to be completed now");
         out.printSeparate();
-        if(currentList.size() != 0) {
+        if(setCurrent.size() != 0) {
             out.printLine(
                     "Time",
                     "Title",
                     "Is repeated");
-            for(Task task : currentList) {
+            for(Task task : setCurrent) {
                 out.printLine(
-                        task.getStartTime().
-                                format(Formatter.getMainTime()),
+                        LocalDateTime.now().
+                                format(Formatter.getMainTimeInput()),
                         task.getTitle(),
                         task.isRepeated()
                 );
@@ -43,18 +47,19 @@ public class IncomingTasksView extends ConsoleView<IncomingTasks> {
         out.printLine("Tasks to complete in the next " +
                 observable.getCheckInterval() + " minutes");
         out.printSeparate();
-        if(incomingList.iterator().hasNext()) {
+        if(!mapIncoming.isEmpty()) {
             out.printLine(
                     "Time",
                     "Title",
                     "Is repeated");
-            for(Task task : incomingList) {
-                out.printLine(
-                        task.getStartTime().
-                                format(Formatter.getMainTime()),
-                        task.getTitle(),
-                        task.isRepeated()
-                );
+            for(LocalDateTime time : mapIncoming.keySet()) {
+                for(Task task : mapIncoming.get(time)) {
+                    out.printLine(
+                            time.format(Formatter.getMainTimeInput()),
+                            task.getTitle(),
+                            task.isRepeated()
+                    );
+                }
             }
         } else {
             out.printLine("No tasks");

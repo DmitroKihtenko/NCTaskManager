@@ -1,6 +1,6 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model;
 
-import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Event;
+import org.apache.log4j.Logger;
 
 import java.time.LocalDateTime;
 import java.util.Iterator;
@@ -8,6 +8,9 @@ import java.util.stream.Stream;
 
 public abstract class AbstractTaskList extends Observable
         implements Iterable<Task>, Cloneable {
+    private static final Logger logger =
+            Logger.getLogger(AbstractTaskList.class);
+
     protected int taskAmount;
 
     /**
@@ -19,8 +22,9 @@ public abstract class AbstractTaskList extends Observable
     public abstract boolean remove(Task task);
     public abstract Task getTask(int index);
     public abstract Stream<Task> getStream();
+    public abstract void replace(int index, Task task);
 
-    public void timeTruncate(LocalDateTime from, LocalDateTime to) {
+    public boolean timeTruncate(LocalDateTime from, LocalDateTime to) {
         Iterable<Task> actualTasks = Tasks.incoming(this, from, to);
         Iterator<Task> listIterator = this.iterator();
         Task thisTask;
@@ -38,9 +42,13 @@ public abstract class AbstractTaskList extends Observable
             wasChanged = true;
         }
         if(wasChanged) {
-            getObservers().updateAll(Event.VIEW);
-            getObservers().updateAll(Event.UPDATE);
+            getObservers().updateAll();
+
+            logger.debug("Successfully truncated list in range [" +
+                    from + "; " + to + "]");
         }
+
+        return wasChanged;
     }
 
     public int size() {

@@ -10,6 +10,7 @@ public class TaskView extends ConsoleView<Task> {
     public TaskView(Task task) {
         super(task);
         out = new TableCOut();
+        out.setSeparatorLen(95);
         out.setColumnsWidth(20, 9, 11, 16, 16, 16);
     }
 

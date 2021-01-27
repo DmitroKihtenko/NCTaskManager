@@ -12,6 +12,7 @@ public class AllTasksView extends
     public AllTasksView(AbstractTaskList tasks) {
         super(tasks);
         out = new TableCOut();
+        out.setSeparatorLen(98);
         out.setColumnsWidth(3, 30, 12, 18, 18, 10);
     }
 

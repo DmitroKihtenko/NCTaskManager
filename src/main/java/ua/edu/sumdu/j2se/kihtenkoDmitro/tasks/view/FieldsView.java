@@ -9,6 +9,7 @@ public class FieldsView extends ConsoleView<TableBuffer> {
     public FieldsView(TableBuffer buffer) {
         super(buffer);
         out = new TableCOut();
+        out.setSeparatorLen(63);
         out.setColumnsWidth(30, 30);
     }
 

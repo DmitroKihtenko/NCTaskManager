@@ -1,8 +1,11 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model;
 
-import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Event;
+import org.apache.log4j.Logger;
 
 public class Menu extends Observable {
+    private static final Logger logger =
+            Logger.getLogger(Menu.class);
+
     protected int size;
     protected String[] options;
 
@@ -34,7 +37,12 @@ public class Menu extends Observable {
                 this.options[counter] = options[counter];
             }
         }
-        getObservers().updateAll(Event.VIEW);
+
+        logger.debug(
+                "Set new menu options"
+        );
+
+        getObservers().updateAll();
     }
 
     public String[] getOptions() {

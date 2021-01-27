@@ -1,6 +1,11 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model;
 
+import org.apache.log4j.Logger;
+
 public class TableBuffer extends CInFieldsBuffer {
+    private static final Logger logger =
+            Logger.getLogger(TableBuffer.class);
+
     protected String[] fieldsNames;
 
     public TableBuffer(String ... fieldsNames) {
@@ -18,6 +23,10 @@ public class TableBuffer extends CInFieldsBuffer {
             }
         }
         this.fieldsNames = fieldsNames;
+
+        logger.debug(
+                "Set field names"
+        );
     }
 
     public String[] getLine(int number) {

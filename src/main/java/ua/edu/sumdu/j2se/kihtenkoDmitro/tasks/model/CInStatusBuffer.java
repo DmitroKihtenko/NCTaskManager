@@ -1,8 +1,11 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model;
 
-import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Event;
+import org.apache.log4j.Logger;
 
 public class CInStatusBuffer extends Observable {
+    private static final Logger logger =
+            Logger.getLogger(CInStatusBuffer.class);
+
     protected String status;
     protected static String okStatus;
 
@@ -21,12 +24,16 @@ public class CInStatusBuffer extends Observable {
             );
         }
         this.status = status;
-        getObservers().updateAll(Event.VIEW);
+
+        logger.debug(
+                "Set status \"" + status + "\""
+        );
+
+        getObservers().updateAll();
     }
 
     public void setStatusOk() {
-        status = okStatus;
-        getObservers().updateAll(Event.VIEW);
+        setStatus(okStatus);
     }
 
     public String getStatus() {

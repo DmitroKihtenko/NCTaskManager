@@ -1,5 +1,6 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.controller;
 
+import org.apache.log4j.Logger;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.controller.util.StatusInput;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.*;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.service.DateTimeArithmetic;
@@ -10,6 +11,9 @@ import java.time.LocalDateTime;
 
 public class CalendarController extends
         ObjectController<Calendar> {
+    private static final Logger logger =
+            Logger.getLogger(CalendarController.class);
+
     public CalendarController(Calendar tasksCalendar) {
         super(tasksCalendar);
         handleAction = Action.CALENDAR_TASKS;
@@ -21,11 +25,11 @@ public class CalendarController extends
                 "Enter new time period",
                 "Back"
         );
-        MenuView menuView = new MenuView(menu);
+        new MenuView(menu);
 
         DescriptionBuffer statusBuffer = new DescriptionBuffer();
         statusBuffer.setObservers(menu.getObservers());
-        StatusView statusView = new StatusView(statusBuffer);
+        new StatusView(statusBuffer);
 
         StatusInput in = new StatusInput(statusBuffer);
         TableBuffer fieldsBuffer = new TableBuffer(
@@ -37,7 +41,7 @@ public class CalendarController extends
         LocalDateTime to = from.plusDays(1);
         fieldsBuffer.setField(1, from.format(Formatter.
                 getMainDateOutput()));
-        FieldsView fieldsView = new FieldsView(fieldsBuffer);
+        new FieldsView(fieldsBuffer);
         fieldsBuffer.setField(2, to.format(Formatter.
                 getMainDateOutput()));
         observable.setTaskCalendar(from, to);
@@ -54,6 +58,11 @@ public class CalendarController extends
                                 format(Formatter.getMainDateInput())
                 );
                 fieldsBuffer.clear();
+
+                logger.debug(
+                        "Attempt to set time period for tasks calendar"
+                );
+
                 from = in.nextTime(Formatter.getMainDateInput(),
                         DateTimeArithmetic.trimSeconds(LocalDateTime.
                                 now()), LocalDateTime.MAX);

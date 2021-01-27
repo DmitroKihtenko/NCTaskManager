@@ -1,5 +1,6 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.util;
 
+import org.apache.log4j.Logger;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Event;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Observer;
 
@@ -8,6 +9,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 public class ObserversLinkedMap implements ObserversList {
+    private static final Logger logger =
+            Logger.getLogger(ObserversLinkedMap.class);
+
     protected HashMap<Event, LinkedList<Observer>> observers;
 
     public ObserversLinkedMap() {
@@ -47,6 +51,9 @@ public class ObserversLinkedMap implements ObserversList {
             }
             return false;
         }
+
+        logger.info("Attempt to notify non-existent observers for" +
+                " an event " + event);
         return false;
     }
 
@@ -56,6 +63,13 @@ public class ObserversLinkedMap implements ObserversList {
             for(Observer temp : observers.get(event)) {
                 temp.update();
             }
+        }
+    }
+
+    @Override
+    public void updateAll() {
+        for(Event event : observers.keySet()) {
+            updateAll(event);
         }
     }
 

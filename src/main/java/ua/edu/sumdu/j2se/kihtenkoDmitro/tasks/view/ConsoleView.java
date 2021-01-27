@@ -4,6 +4,7 @@ import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.Observable;
 
 public abstract class ConsoleView<T> implements Observer {
     protected T observable;
+
     ConsoleView(Observable observable) {
         if(observable == null) {
             throw new IllegalArgumentException(

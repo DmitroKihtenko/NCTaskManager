@@ -9,6 +9,7 @@ public class StatusView extends ConsoleView<DescriptionBuffer> {
     public StatusView(DescriptionBuffer buffer) {
         super(buffer);
         out = new SeparateCOut();
+        out.setSeparatorLen(50);
     }
 
     @Override

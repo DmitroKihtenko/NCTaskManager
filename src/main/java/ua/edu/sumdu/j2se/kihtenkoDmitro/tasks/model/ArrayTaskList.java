@@ -1,6 +1,6 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model;
 
-import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Event;
+import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -8,6 +8,9 @@ import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 public class ArrayTaskList extends AbstractTaskList {
+    private static final Logger logger =
+            Logger.getLogger(ArrayTaskList.class);
+
     /**
      * Amount of added or deleted tasks after which the array memory is changed.
      */
@@ -38,8 +41,11 @@ public class ArrayTaskList extends AbstractTaskList {
 
         taskArr[taskAmount] = task;
         taskAmount++;
-        getObservers().updateAll(Event.VIEW);
-        getObservers().updateAll(Event.UPDATE);
+        getObservers().updateAll();
+
+        logger.debug(
+                "Added new task " + task
+        );
     }
 
     public boolean remove(Task task) {
@@ -60,6 +66,8 @@ public class ArrayTaskList extends AbstractTaskList {
         }
 
         if(!searchStatus) {
+            logger.debug("Removing task not found");
+
             return false;
         }
 
@@ -77,10 +85,16 @@ public class ArrayTaskList extends AbstractTaskList {
 
             System.arraycopy(taskArr, 0, tempArr, 0, taskAmount);
             taskArr = tempArr;
+
+            logger.debug("List resized to size " + taskArr.length);
         }
 
-        getObservers().updateAll(Event.VIEW);
-        getObservers().updateAll(Event.UPDATE);
+        getObservers().updateAll();
+
+        logger.debug(
+                "Removed task " + task
+        );
+
         return true;
     }
 
@@ -95,6 +109,24 @@ public class ArrayTaskList extends AbstractTaskList {
         }
 
         return taskArr[index];
+    }
+
+    @Override
+    public void replace(int index, Task task) {
+        if(index < 0 || index >= taskAmount) {
+            throw new IndexOutOfBoundsException(
+                    "Invalid ArrayTaskList index!"
+            );
+        }
+
+        if(!taskArr[index].equals(task)) {
+            taskArr[index] = task;
+            getObservers().updateAll();
+
+            logger.debug(
+                    "Replaced task " + task
+            );
+        }
     }
 
     @Override

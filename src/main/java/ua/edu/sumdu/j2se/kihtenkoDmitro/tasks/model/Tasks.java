@@ -7,13 +7,19 @@ public class Tasks {
     public static Iterable<Task> incoming(Iterable<Task> tasks,
                                           LocalDateTime from,
                                           LocalDateTime to) {
-        if(from == null || to == null || from.isAfter(to)) {
+        if(from == null || to == null) {
+            throw new IllegalArgumentException(
+                    "Method's parameter has null value!"
+            );
+        }
+        if(from.isAfter(to)) {
             throw new IllegalArgumentException(
                     "Invalid interval parameters!"
             );
         }
 
-        LinkedList<Task> retTasks = new LinkedList<>();
+        AbstractTaskList retTasks = TaskListFactory.
+                createTaskList(ListTypes.types.ARRAY);
         LocalDateTime nextTime;
 
         for(Task currentTask : tasks) {
@@ -25,8 +31,7 @@ public class Tasks {
         return retTasks;
     }
 
-    public static SortedMap<LocalDateTime, Set<Task>> calendar(Iterable<Task> tasks,
-                                                               LocalDateTime start,
+    public static SortedMap<LocalDateTime, Set<Task>> calendar(Iterable<Task> tasks, LocalDateTime start,
                                                                LocalDateTime end) {
         if(start == null || end == null) {
             throw new IllegalArgumentException(

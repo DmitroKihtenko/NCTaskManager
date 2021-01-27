@@ -1,16 +1,23 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model;
 
+import org.apache.log4j.Logger;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.service.DateTimeArithmetic;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Event;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Observer;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class IncomingTasks extends Observable implements Observer {
+    private static final Logger logger =
+            Logger.getLogger(IncomingTasks.class);
+
     protected AbstractTaskList generalTasks;
 
-    protected Iterable<Task> listIncoming;
-    protected LinkedTaskList listCurrent;
+    protected Map<LocalDateTime, Set<Task>> mapIncoming;
+    protected Set<Task> setCurrent;
     protected int checkInterval;
 
     public IncomingTasks(AbstractTaskList tasks) {
@@ -22,45 +29,55 @@ public class IncomingTasks extends Observable implements Observer {
         generalTasks = tasks;
         tasks.getObservers().attach(this, Event.UPDATE);
         checkInterval = 10;
-        listIncoming = Tasks.incoming(generalTasks,
-                LocalDateTime.now().minusMinutes(1),
-                LocalDateTime.now().plusMinutes(checkInterval));
-        listCurrent = new LinkedTaskList();
-        for(Task task : listIncoming) {
-            LocalDateTime nowTime = LocalDateTime.now();
-            LocalDateTime nextTime = task.nextTimeAfter(nowTime.
-                    minusMinutes(1));
-            if(nextTime != null && nextTime.equals(nowTime)) {
-                listCurrent.add(task);
+        LocalDateTime nowTime = LocalDateTime.now();
+        mapIncoming = Tasks.calendar(generalTasks,
+                nowTime.minusMinutes(1),
+                nowTime.plusMinutes(checkInterval));
+        setCurrent = new HashSet<>();
+        for(LocalDateTime time : mapIncoming.keySet()) {
+            if(time.equals(DateTimeArithmetic.trimSeconds(nowTime))) {
+                setCurrent = mapIncoming.get(time);
+                break;
             }
         }
     }
 
     public void check() {
-        Iterable<Task> newIncomingList = Tasks.incoming(generalTasks,
-                LocalDateTime.now().minusMinutes(1),
-                LocalDateTime.now().plusMinutes(checkInterval));
-        LinkedTaskList newCurrList = new LinkedTaskList();
+        logger.debug(
+                "Checking changes in incoming task list"
+        );
+
         boolean wasChanges = false;
-        if(!listIncoming.equals(newIncomingList)) {
-            listIncoming = newIncomingList;
+        LocalDateTime nowTime = LocalDateTime.now();
+        Map<LocalDateTime, Set<Task>> newMapIncoming =
+                Tasks.calendar(generalTasks,
+                nowTime.minusMinutes(1),
+                nowTime.plusMinutes(checkInterval));
+        Set<Task> newSetCurrent = new HashSet<>();
+        if(!newMapIncoming.equals(mapIncoming)) {
+            mapIncoming = newMapIncoming;
             wasChanges = true;
         }
-        for(Task task : listIncoming) {
-            LocalDateTime nowTime = DateTimeArithmetic.
-                    trimSeconds(LocalDateTime.now());
-            LocalDateTime nextTime = task.nextTimeAfter(nowTime.
-                    minusMinutes(1));
-            if(nextTime != null && nextTime.equals(nowTime)) {
-                newCurrList.add(task);
+        for(LocalDateTime time : mapIncoming.keySet()) {
+            if(time.equals(DateTimeArithmetic.trimSeconds(nowTime))) {
+                newSetCurrent = mapIncoming.get(time);
+                break;
             }
         }
-        if(!listCurrent.equals(newCurrList)) {
-            listCurrent = newCurrList;
+        if(!newSetCurrent.equals(setCurrent)) {
+            setCurrent = newSetCurrent;
             wasChanges = true;
         }
         if(wasChanges) {
+            logger.info(
+                    "Found changes in incoming tasks list"
+            );
+
             getObservers().updateAll(Event.VIEW);
+        } else {
+            logger.debug(
+                    "Changes not found"
+            );
         }
     }
 
@@ -68,12 +85,12 @@ public class IncomingTasks extends Observable implements Observer {
         return checkInterval;
     }
 
-    public Iterable<Task> getIncomingList() {
-        return listIncoming;
+    public Map<LocalDateTime, Set<Task>> getMapIncoming() {
+        return mapIncoming;
     }
 
-    public LinkedTaskList getCurrentList() {
-        return listCurrent;
+    public Set<Task> getSetCurrent() {
+        return setCurrent;
     }
 
     @Override

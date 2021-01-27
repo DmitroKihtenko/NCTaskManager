@@ -1,8 +1,11 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model;
 
-import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Event;
+import org.apache.log4j.Logger;
 
 public class CInFieldsBuffer extends Observable {
+    private static final Logger logger =
+            Logger.getLogger(CInFieldsBuffer.class);
+
     protected Object[] values;
     protected int currentField;
     protected static String currentFieldStr;
@@ -39,8 +42,14 @@ public class CInFieldsBuffer extends Observable {
             );
         }
         values[number - 1] = field;
+
+        logger.debug(
+                "Saved new field " + field + " by index " +
+                        (number - 1)
+        );
+
         if(nextCurrent == Integer.MIN_VALUE) {
-            getObservers().updateAll(Event.VIEW);
+            getObservers().updateAll();
         } else {
             setCurrentField(nextCurrent);
         }
@@ -55,7 +64,12 @@ public class CInFieldsBuffer extends Observable {
         }
         currentField = number;
         values[currentField - 1] = currentFieldStr;
-        getObservers().updateAll(Event.VIEW);
+
+        logger.debug(
+                "Set current field index " + (number - 1)
+        );
+
+        getObservers().updateAll();
     }
 
     public Object getField(int number) {
@@ -77,7 +91,12 @@ public class CInFieldsBuffer extends Observable {
         for(int counter = 1; counter < getFieldsAmount(); counter++) {
             values[counter] = emptyFieldStr;
         }
-        getObservers().updateAll(Event.VIEW);
+
+        logger.debug(
+                "Cleared fields buffer"
+        );
+
+        getObservers().updateAll();
     }
 
     public int getFieldsAmount() {

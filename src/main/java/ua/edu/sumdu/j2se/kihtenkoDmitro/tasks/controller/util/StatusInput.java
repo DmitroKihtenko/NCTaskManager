@@ -1,5 +1,6 @@
 package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.controller.util;
 
+import org.apache.log4j.Logger;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.CInStatusBuffer;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model.Menu;
 import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.service.StringChecker;
@@ -10,6 +11,9 @@ import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class StatusInput {
+    private static final Logger logger =
+            Logger.getLogger(StatusInput.class);
+
     protected CInStatusBuffer statusBuffer;
     protected int inputLineLimit;
 
@@ -24,6 +28,10 @@ public class StatusInput {
             );
         }
         inputLineLimit = limit;
+
+        logger.debug(
+                "Set length limit for input lines " + limit
+        );
     }
 
     int getLineLimit() {
@@ -37,6 +45,10 @@ public class StatusInput {
             statusBuffer.setStatus("Expected line no more than " +
                     inputLineLimit + " characters");
             do {
+                logger.debug(
+                        "User's input error"
+                );
+
                 line = in.nextLine();
             } while (line.length() > inputLineLimit);
             statusBuffer.setStatusOk();
@@ -53,17 +65,21 @@ public class StatusInput {
             if (line.length() > inputLineLimit) {
                 statusBuffer.setStatus("Expected line no more than " +
                         inputLineLimit + " characters");
+
+                logger.debug(
+                        "User's input error"
+                );
+
                 wasError = true;
                 continue;
             }
             if (StringChecker.checkEmpty(line)) {
                 statusBuffer.setStatus("Expected not empty line");
-                wasError = true;
-                continue;
-            }
-            if (StringChecker.checkCtrlChars(line)) {
-                statusBuffer.setStatus("Expected input" +
-                        "without control characters");
+
+                logger.debug(
+                        "User's input error"
+                );
+
                 wasError = true;
                 continue;
             }
@@ -109,10 +125,20 @@ public class StatusInput {
             if(inValue < from) {
                 statusBuffer.setStatus("Expected value no less than " +
                         from + "!");
+
+                logger.debug(
+                        "User's input error"
+                );
+
                 continue;
             } else if (inValue > to) {
                 statusBuffer.setStatus("Expected value no more than " +
                         to + "!");
+
+                logger.debug(
+                        "User's input error"
+                );
+
                 continue;
             }
             return inValue;
@@ -125,6 +151,12 @@ public class StatusInput {
 
     public LocalDateTime nextTime(DateTimeFormatter format,
                               LocalDateTime from, LocalDateTime to) {
+        if(format == null || from == null || to == null) {
+            throw new IllegalArgumentException(
+                    "Method's parameter has null value"
+            );
+        }
+
         Scanner in = new Scanner(System.in);
         String line;
         LocalDateTime returnTime;
@@ -140,18 +172,33 @@ public class StatusInput {
                 returnTime = LocalDateTime.parse(line, format);
             } catch (DateTimeParseException e) {
                 statusBuffer.setStatus("Invalid date time format");
+
+                logger.debug(
+                        "User's input error"
+                );
+
                 wasError = true;
                 continue;
             }
             if(returnTime.isBefore(from)) {
                 statusBuffer.setStatus("Expected time no less" +
                         " than " + from.format(format));
+
+                logger.debug(
+                        "User's input error"
+                );
+
                 wasError = true;
                 continue;
             }
             if(returnTime.isAfter(to)) {
                 statusBuffer.setStatus("Expected time no more" +
                             " than " + to.format(format));
+
+                logger.debug(
+                        "User's input error"
+                );
+
                 wasError = true;
                 continue;
             }

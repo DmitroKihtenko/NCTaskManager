@@ -6,6 +6,9 @@ import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Observer;
 public interface ObserversList extends Cloneable {
     void attach(Observer observer, Event event);
     boolean detach(Observer observer, Event event);
+
     void updateAll(Event event);
+    void updateAll();
+
     ObserversList clone();
 }
