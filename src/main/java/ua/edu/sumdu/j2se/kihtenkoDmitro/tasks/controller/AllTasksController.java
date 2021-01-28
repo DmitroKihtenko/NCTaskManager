@@ -29,7 +29,7 @@ public class AllTasksController extends
                 "New task",
                 "Change task",
                 "Remove task",
-                "Remove all outdated",
+                "Remove all outdated and all inactive",
                 "Back"
         );
         new MenuView(menu);

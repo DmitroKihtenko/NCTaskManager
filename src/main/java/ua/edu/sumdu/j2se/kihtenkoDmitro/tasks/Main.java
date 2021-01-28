@@ -67,6 +67,10 @@ public class Main {
 			logger.fatal("Wrong parameter value", e);
 
 			e.printStackTrace();
+		} catch (Exception e) {
+			logger.fatal("Unknown error", e);
+
+			e.printStackTrace();
 		}
 	}
 }
