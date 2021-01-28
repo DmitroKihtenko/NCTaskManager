@@ -9,7 +9,7 @@ public class TableBuffer extends CInFieldsBuffer {
     protected String[] fieldsNames;
 
     public TableBuffer(String ... fieldsNames) {
-        super(fieldsNames.length);
+        super(fieldsNames == null ? 1 : fieldsNames.length);
         if(fieldsNames == null) {
             throw new IllegalArgumentException(
                     "Field names parameter list has null value"
