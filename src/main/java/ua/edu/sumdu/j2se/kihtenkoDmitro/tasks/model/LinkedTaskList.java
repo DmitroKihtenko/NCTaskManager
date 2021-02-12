@@ -1,4 +1,6 @@
-package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks;
+package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model;
+
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,12 +8,15 @@ import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 public class LinkedTaskList extends AbstractTaskList {
+    private static final Logger logger =
+            Logger.getLogger(LinkedTaskList.class);
+
     /**
      * Saving cell class for linked list node.
      */
     class LinkedListPointer {
-        Task storedTask;
-        LinkedListPointer next;
+        private Task storedTask;
+        private LinkedListPointer next;
     }
 
     private LinkedListPointer first;
@@ -39,6 +44,12 @@ public class LinkedTaskList extends AbstractTaskList {
         first.next = tempPointer;
 
         taskAmount++;
+
+        logger.debug(
+                "Added new task " + task
+        );
+
+        getObservers().updateAll();
     }
 
     public boolean remove(Task task) {
@@ -60,6 +71,11 @@ public class LinkedTaskList extends AbstractTaskList {
 
                 taskAmount--;
 
+                logger.debug(
+                        "Removed task " + task
+                );
+
+                getObservers().updateAll();
                 return true;
             }
 
@@ -90,8 +106,34 @@ public class LinkedTaskList extends AbstractTaskList {
     }
 
     @Override
+    public void replace(int index, Task task) {
+        if(index < 0 || index >= taskAmount) {
+            throw new IndexOutOfBoundsException(
+                    "Invalid ArrayTaskList index!"
+            );
+        }
+
+        index++;
+        LinkedListPointer searchPointer = first;
+
+        for(int counter = taskAmount; counter > taskAmount - index; counter--) {
+            searchPointer = searchPointer.next;
+        }
+
+        if(!searchPointer.storedTask.equals(task)) {
+            searchPointer.storedTask = task;
+
+            logger.debug(
+                    "Replaced task " + task
+            );
+
+            getObservers().updateAll();
+        }
+    }
+
+    @Override
     public Iterator<Task> iterator() {
-        return new Iterator<Task>() {
+        return new Iterator<>() {
             private LinkedListPointer node = first.next;
             private LinkedListPointer deleteNode = first;
 

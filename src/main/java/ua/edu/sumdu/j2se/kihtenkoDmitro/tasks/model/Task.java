@@ -1,4 +1,8 @@
-package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks;
+package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model;
+
+import org.apache.log4j.Logger;
+import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.service.DateTimeArithmetic;
+import ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.view.Event;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -9,7 +13,9 @@ import java.time.ZoneOffset;
  * @author Kikhtenko Dmitro
  * @version 1.0
  */
-public class Task implements Cloneable, Externalizable {
+public class Task extends Observable implements Cloneable, Externalizable {
+    private static final Logger logger =
+            Logger.getLogger(Task.class);
 
     /**
      * Stores a title of task.
@@ -18,17 +24,18 @@ public class Task implements Cloneable, Externalizable {
 
     /**
      * If task is repeated ({@link Task#isPeriodical}) stores a time of task start.
-     * If task is not repeated stores a time of task completion
+     * If task is not repeated stores a time of task completion.
+     * Seconds are trimmed.
      */
     private LocalDateTime start;
 
     /**
-     * Stores the end time of non-repeated task completion.
+     * Stores the end time of repeated task, seconds are trimmed.
      */
     private LocalDateTime end;
 
     /**
-     * Stores an interval of task repeat in seconds.
+     * Stores an interval of task repeat in minutes.
      */
     private int interval;
 
@@ -86,6 +93,12 @@ public class Task implements Cloneable, Externalizable {
      */
     public void setTitle(String title) {
         this.title = title;
+
+        logger.debug(
+                "Saved new title of task" + this
+        );
+
+        getObservers().updateAll();
     }
 
     /**
@@ -102,6 +115,12 @@ public class Task implements Cloneable, Externalizable {
      */
     public void setActive(boolean active) {
         this.isActive = active;
+
+        logger.debug(
+                "Set new activity of task " + this
+        );
+
+        getObservers().updateAll(Event.VIEW);
     }
 
     /**
@@ -124,10 +143,17 @@ public class Task implements Cloneable, Externalizable {
                     "LocalDateTime parameter has null value!"
             );
         }
+        time = DateTimeArithmetic.trimSeconds(time);
         this.start = time;
         if(this.isPeriodical) {
             this.isPeriodical = false;
         }
+
+        logger.debug(
+                "Set new start time of task " + this
+        );
+
+        getObservers().updateAll();
     }
 
     /**
@@ -139,12 +165,18 @@ public class Task implements Cloneable, Externalizable {
      * @see Task#setTime(LocalDateTime) setter for non-repeated task
      */
     public void setTime(LocalDateTime start, LocalDateTime end, int interval) {
-        if(start == null || end == null || start.isAfter(end) || start.isEqual(end) || interval <= 0) {
+        if(start == null || end == null) {
             throw new IllegalArgumentException(
-                    "Interval parameters error!"
+                    "Time parameter has null value"
             );
         }
-
+        start = DateTimeArithmetic.trimSeconds(start);
+        end = DateTimeArithmetic.trimSeconds(end);
+        if(start.isAfter(end) || start.isEqual(end) || interval <= 0) {
+            throw new IllegalArgumentException(
+                    "Time interval logic is violated!"
+            );
+        }
         this.start = start;
         this.end = end;
         this.interval = interval;
@@ -152,6 +184,13 @@ public class Task implements Cloneable, Externalizable {
         if(!this.isPeriodical) {
             this.isPeriodical = true;
         }
+
+        logger.debug(
+                "Set new start time, end time and interval of " +
+                        "task " + this
+        );
+
+        getObservers().updateAll();
     }
 
     /**
@@ -196,7 +235,7 @@ public class Task implements Cloneable, Externalizable {
      * Method that returns next time of task completion after given time.
      * @param current the time relative to which you want to find the completion time
      * @exception IllegalArgumentException if LocalDateTime object has null value
-     * @return time of next task completion after current time. If task is not active returns 0. If task will not run after current time returns 0
+     * @return time of next task completion after current time. If task is not active returns null. If task will not run after current time returns null
      */
     public LocalDateTime nextTimeAfter(LocalDateTime current) {
         if(current == null) {
@@ -208,14 +247,15 @@ public class Task implements Cloneable, Externalizable {
             return null;
         }
 
+        current = DateTimeArithmetic.trimSeconds(current);
         if(this.isPeriodical) {
             LocalDateTime nextTime = this.start;
 
             while(!current.isBefore(nextTime)) {
-                if(nextTime.plusSeconds(this.interval).isAfter(this.end)) {
+                if(nextTime.plusMinutes(this.interval).isAfter(this.end)) {
                     return null;
                 } else {
-                    nextTime = nextTime.plusSeconds(this.interval);
+                    nextTime = nextTime.plusMinutes(this.interval);
                 }
             }
 
@@ -263,7 +303,7 @@ public class Task implements Cloneable, Externalizable {
 
         result ^= title.hashCode();
         result ^= start.hashCode();
-        result ^= end.hashCode();
+        result ^= getEndTime().hashCode();
         result += interval;
         if(isActive) {
             result >>= 3;
@@ -335,12 +375,12 @@ public class Task implements Cloneable, Externalizable {
         interval = in.readInt();
         start = LocalDateTime.ofEpochSecond(in.readLong(),
                 0, ZoneOffset.UTC);
-        if(interval == 1) {
+        if(interval == 0) {
+            isPeriodical = false;
+        } else {
             isPeriodical = true;
             end = LocalDateTime.ofEpochSecond(in.readLong(),
                     0, ZoneOffset.UTC);
-        } else {
-            isPeriodical = false;
         }
     }
 }

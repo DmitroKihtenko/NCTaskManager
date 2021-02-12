@@ -1,9 +1,16 @@
-package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks;
+package ua.edu.sumdu.j2se.kihtenkoDmitro.tasks.model;
 
+import org.apache.log4j.Logger;
+
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
-public abstract class AbstractTaskList implements Iterable<Task>, Cloneable {
+public abstract class AbstractTaskList extends Observable
+        implements Iterable<Task>, Cloneable {
+    private static final Logger logger =
+            Logger.getLogger(AbstractTaskList.class);
+
     protected int taskAmount;
 
     /**
@@ -15,27 +22,55 @@ public abstract class AbstractTaskList implements Iterable<Task>, Cloneable {
     public abstract boolean remove(Task task);
     public abstract Task getTask(int index);
     public abstract Stream<Task> getStream();
+    public abstract void replace(int index, Task task);
+
+    public boolean timeTruncate(LocalDateTime from, LocalDateTime to) {
+        Iterable<Task> actualTasks = Tasks.incoming(this, from, to);
+        Iterator<Task> listIterator = this.iterator();
+        Task thisTask;
+        boolean wasChanged = false;
+
+        outsideLabel:
+        while(listIterator.hasNext()) {
+            thisTask = listIterator.next();
+            for(Task actualTask : actualTasks) {
+                if(thisTask == actualTask) {
+                    continue outsideLabel;
+                }
+            }
+            listIterator.remove();
+            wasChanged = true;
+        }
+        if(wasChanged) {
+            getObservers().updateAll();
+
+            logger.debug("Successfully truncated list in range [" +
+                    from + "; " + to + "]");
+        }
+
+        return wasChanged;
+    }
 
     public int size() {
         return taskAmount;
     }
 
     @Override
-    public boolean equals(Object otherObject) {
-        if (otherObject == null) {
+    public boolean equals(Object other) {
+        if (other == null) {
             return false;
         }
-        if (this == otherObject) {
+        if (this == other) {
             return true;
         }
-        if (getClass() != otherObject.getClass()) {
+        if (getClass() != other.getClass()) {
             return false;
         }
-        if(taskAmount != ((AbstractTaskList)otherObject).taskAmount) {
+        if(taskAmount != ((AbstractTaskList)other).taskAmount) {
             return false;
         }
 
-        Iterator otherIt = ((AbstractTaskList)otherObject).iterator();
+        Iterator otherIt = ((AbstractTaskList)other).iterator();
         for(Task thisIt : this) {
             if(!thisIt.equals(otherIt.next())) {
                 return false;
